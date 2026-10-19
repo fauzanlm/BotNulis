@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useDark, useToggle } from '@vueuse/core';
+import { useDocumentStore } from '@/stores/documentStore';
 import TextInputTab from './TextInputTab.vue';
 import TypographyTab from './TypographyTab.vue';
 import HumanizerTab from './HumanizerTab.vue';
@@ -15,11 +16,14 @@ import {
   Sun,
   Moon,
   PenTool,
+  Undo2,
+  Redo2,
 } from 'lucide-vue-next';
 
 type TabKey = 'text' | 'typography' | 'paper' | 'humanizer' | 'realism';
 
 const activeTab = ref<TabKey>('text');
+const documentStore = useDocumentStore();
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -47,15 +51,36 @@ const TABS = [
         </div>
       </div>
 
-      <!-- Dark Mode Toggle -->
-      <button
-        @click="toggleDark()"
-        class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition"
-        title="Ganti Tema"
-      >
-        <Moon v-if="!isDark" class="w-4 h-4" />
-        <Sun v-else class="w-4 h-4 text-amber-400" />
-      </button>
+      <div class="flex items-center gap-1">
+        <!-- Quick Undo/Redo -->
+        <button
+          @click="documentStore.undo"
+          :disabled="!documentStore.canUndo"
+          class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition"
+          title="Undo (Ctrl+Z / Cmd+Z)"
+        >
+          <Undo2 class="w-4 h-4" />
+        </button>
+
+        <button
+          @click="documentStore.redo"
+          :disabled="!documentStore.canRedo"
+          class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition"
+          title="Redo (Ctrl+Y / Cmd+Shift+Z)"
+        >
+          <Redo2 class="w-4 h-4" />
+        </button>
+
+        <!-- Dark Mode Toggle -->
+        <button
+          @click="toggleDark()"
+          class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition"
+          title="Ganti Tema"
+        >
+          <Moon v-if="!isDark" class="w-4 h-4" />
+          <Sun v-else class="w-4 h-4 text-amber-400" />
+        </button>
+      </div>
     </div>
 
     <!-- Navigation Tabs -->

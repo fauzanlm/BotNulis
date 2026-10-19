@@ -70,13 +70,13 @@ async function drawCurrentPage() {
 
 // Watch for any changes and redraw
 watch(
-  () => [
-    props.page,
-    paperStore.currentPaperId,
-    styleStore.typography,
-    styleStore.humanizer,
-    styleStore.realism,
-    documentStore.header,
+  [
+    () => props.page,
+    () => paperStore.currentPaperId,
+    () => ({ ...styleStore.typography }),
+    () => ({ ...styleStore.humanizer }),
+    () => ({ ...styleStore.realism }),
+    () => ({ ...documentStore.header }),
   ],
   () => {
     drawCurrentPage();

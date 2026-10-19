@@ -3,13 +3,15 @@ import type { HumanizerConfig } from '@/types/style';
 
 export function useHumanizer() {
   /**
-   * Calculate deterministic jitter and noise parameters for a specific word
+   * Calculate deterministic jitter and noise parameters for a specific word.
+   * Scales proportionally with font size so jitter is clearly visible on high-resolution paper scans.
    */
   function getWordJitter(
     pageIndex: number,
     lineIndex: number,
     wordIndex: number,
-    config: HumanizerConfig
+    config: HumanizerConfig,
+    fontSize = 52
   ) {
     if (!config.enabled) {
       return {
@@ -23,17 +25,19 @@ export function useHumanizer() {
     const seed = (pageIndex * 100000) + (lineIndex * 1000) + (wordIndex * 17) + 12345;
     const prng = createPRNG(seed);
 
-    // Baseline jitter (-2px to +2px scaled by intensity)
-    const jitterY = (prng() - 0.5) * 4 * config.baselineJitter;
+    // Baseline jitter: proportional to font size (up to ±30% of font size at 100% slider)
+    const maxJitter = (fontSize * 0.3) * config.baselineJitter;
+    const jitterY = (prng() - 0.5) * 2 * maxJitter;
 
-    // Sub-degree rotation (-1.2deg to +1.2deg in radians)
-    const rotation = (prng() - 0.5) * (2.4 * Math.PI / 180) * config.rotationJitter;
+    // Sub-degree to degree rotation (up to ±4.5deg in radians at 100% slider)
+    const maxRotation = (9.0 * Math.PI / 180) * config.rotationJitter;
+    const rotation = (prng() - 0.5) * 2 * maxRotation;
 
-    // Spacing factor (0.85 to 1.15)
-    const spacingFactor = 1 + (prng() - 0.5) * 0.3 * config.spacingJitter;
+    // Spacing factor (ranges from 0.55x to 1.45x at 100% slider)
+    const spacingFactor = 1 + (prng() - 0.5) * 0.9 * config.spacingJitter;
 
-    // Ink flow / pressure variance (alpha between 0.88 and 1.0)
-    const alpha = 1 - (prng() * 0.12 * config.inkPressureVariance);
+    // Ink flow / pressure variance (alpha between 0.72 and 1.0 at 100% slider)
+    const alpha = 1 - (prng() * 0.28 * config.inkPressureVariance);
 
     return {
       jitterY,
@@ -44,13 +48,14 @@ export function useHumanizer() {
   }
 
   /**
-   * Calculate organic margin drift (hand fatigue drifting as lines descend)
+   * Calculate organic margin drift (hand fatigue drifting as lines descend).
+   * Noticeable shift (up to 40px) on high-res paper templates.
    */
   function getLineMarginDrift(lineIndex: number, config: HumanizerConfig): number {
     if (!config.enabled || config.marginDrift <= 0) return 0;
     // Gentle sinusoidal wave combined with slight progressive drift
-    const wave = Math.sin(lineIndex * 0.35) * 6;
-    const slope = (lineIndex % 15) * 0.4;
+    const wave = Math.sin(lineIndex * 0.3) * 24;
+    const slope = (lineIndex % 20) * 1.8;
     return (wave + slope) * config.marginDrift;
   }
 
@@ -69,7 +74,7 @@ export function useHumanizer() {
     const prng = createPRNG(seed);
     ctx.save();
     ctx.strokeStyle = color;
-    ctx.lineWidth = 1.6 + prng() * 0.8;
+    ctx.lineWidth = Math.max(1.8, fontSize * 0.04) + prng() * 1.0;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
@@ -78,13 +83,13 @@ export function useHumanizer() {
 
     for (let p = 0; p < passes; p++) {
       ctx.beginPath();
-      let curX = x - 3;
-      let curY = middleY + (prng() - 0.5) * 4 + (p * 2);
+      let curX = x - 4;
+      let curY = middleY + (prng() - 0.5) * (fontSize * 0.15) + (p * 2);
       ctx.moveTo(curX, curY);
 
       while (curX < x + width + 4) {
-        curX += 6 + prng() * 8;
-        curY = middleY + (prng() - 0.5) * 8 + (p * 2);
+        curX += 8 + prng() * 10;
+        curY = middleY + (prng() - 0.5) * (fontSize * 0.2) + (p * 2);
         ctx.lineTo(curX, curY);
       }
       ctx.stroke();

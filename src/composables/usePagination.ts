@@ -105,7 +105,13 @@ export function usePagination() {
           advanceToNextLine();
         }
 
-        const jitter = getWordJitter(currentPageIndex, currentLineIndex, globalWordIndex, humanizer);
+        const jitter = getWordJitter(
+          currentPageIndex,
+          currentLineIndex,
+          globalWordIndex,
+          humanizer,
+          typography.fontSize
+        );
 
         const wordObj: RenderWord = {
           text: token.text,

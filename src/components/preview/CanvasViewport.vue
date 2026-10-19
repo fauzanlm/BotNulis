@@ -66,18 +66,13 @@ function calculateLayout() {
   }
 }
 
-// Watch inputs and debounce layout recalculation
+// Watch inputs and recalculate layout
 watch(
-  () => [
-    documentStore.text,
-    paperStore.currentPaperId,
-    styleStore.typography.fontSize,
-    styleStore.typography.fontFamily,
-    styleStore.typography.lineHeightScale,
-    styleStore.typography.letterSpacing,
-    styleStore.typography.wordSpacing,
-    styleStore.humanizer.spacingJitter,
-    styleStore.humanizer.marginDrift,
+  [
+    () => documentStore.text,
+    () => paperStore.currentPaperId,
+    () => ({ ...styleStore.typography }),
+    () => ({ ...styleStore.humanizer }),
   ],
   () => {
     calculateLayout();

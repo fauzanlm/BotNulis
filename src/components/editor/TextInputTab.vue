@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useDocumentStore } from '@/stores/documentStore';
-import { RotateCcw, Strikethrough, Highlighter, Palette } from 'lucide-vue-next';
+import { RotateCcw, Strikethrough, Highlighter, Palette, Undo2, Redo2 } from 'lucide-vue-next';
 
 const documentStore = useDocumentStore();
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
@@ -15,12 +15,28 @@ function insertTag(openTag: string, closeTag: string) {
   const selected = text.substring(start, end) || 'teks';
 
   documentStore.text = text.substring(0, start) + openTag + selected + closeTag + text.substring(end);
+  documentStore.commit();
 
   // Restore selection
   setTimeout(() => {
     textarea.focus();
     textarea.setSelectionRange(start + openTag.length, start + openTag.length + selected.length);
   }, 10);
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  // Support Ctrl+Z / Cmd+Z (Undo) and Ctrl+Y / Cmd+Shift+Z (Redo)
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'z') {
+    event.preventDefault();
+    if (event.shiftKey) {
+      documentStore.redo();
+    } else {
+      documentStore.undo();
+    }
+  } else if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'y') {
+    event.preventDefault();
+    documentStore.redo();
+  }
 }
 </script>
 
@@ -55,20 +71,44 @@ function insertTag(openTag: string, closeTag: string) {
       </div>
     </div>
 
-    <!-- Quick Formatting Syntax Bar -->
-    <div class="space-y-1.5">
+    <!-- Quick Formatting & History Bar -->
+    <div class="space-y-2">
       <div class="flex items-center justify-between">
         <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Isi Tulisan Tangan
         </label>
-        <button
-          @click="documentStore.resetToSample"
-          class="inline-flex items-center gap-1 text-[11px] text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
-          title="Reset ke contoh teks bawaan"
-        >
-          <RotateCcw class="w-3 h-3" />
-          <span>Reset Contoh</span>
-        </button>
+
+        <!-- Undo, Redo, and Reset -->
+        <div class="flex items-center gap-1.5">
+          <button
+            @click="documentStore.undo"
+            :disabled="!documentStore.canUndo"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition"
+            title="Undo (Ctrl+Z / Cmd+Z)"
+          >
+            <Undo2 class="w-3.5 h-3.5" />
+            <span>Undo</span>
+          </button>
+
+          <button
+            @click="documentStore.redo"
+            :disabled="!documentStore.canRedo"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed transition"
+            title="Redo (Ctrl+Y / Cmd+Shift+Z)"
+          >
+            <Redo2 class="w-3.5 h-3.5" />
+            <span>Redo</span>
+          </button>
+
+          <button
+            @click="documentStore.resetToSample"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+            title="Reset ke contoh teks bawaan"
+          >
+            <RotateCcw class="w-3 h-3" />
+            <span>Reset</span>
+          </button>
+        </div>
       </div>
 
       <!-- Quick Syntax Buttons -->
@@ -117,6 +157,7 @@ function insertTag(openTag: string, closeTag: string) {
         rows="16"
         placeholder="Ketik atau tempel teks tugasmu di sini..."
         class="w-full text-xs font-mono leading-relaxed p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none resize-none shadow-sm"
+        @keydown="handleKeydown"
       ></textarea>
 
       <!-- Stats Bar -->
