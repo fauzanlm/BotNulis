@@ -5,10 +5,12 @@ export interface HeaderFieldPosition {
   enabled?: boolean;
 }
 
+export type PaperCategory = 'notebook' | 'folio' | 'binder' | 'specialty' | 'artistic';
+
 export interface PaperTemplate {
   id: string;
   name: string;
-  category: 'notebook' | 'folio' | 'bigboss' | 'hvs' | 'grid';
+  category: PaperCategory;
   imageUrl: string;
   width: number;
   height: number;

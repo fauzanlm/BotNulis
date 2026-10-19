@@ -28,24 +28,187 @@ export function useCanvasRenderer() {
   }
 
   /**
-   * Draw procedural HVS paper background if no image is used
+   * Draw high-fidelity procedural paper backgrounds
    */
-  function drawProceduralPaper(ctx: CanvasRenderingContext2D, width: number, height: number) {
-    ctx.fillStyle = '#faf8f5';
-    ctx.fillRect(0, 0, width, height);
-
-    // Draw subtle paper texture noise
+  function drawProceduralPaper(
+    ctx: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    paper: PaperTemplate
+  ) {
     ctx.save();
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.015)';
+
+    if (paper.id === 'binder-loose-leaf-20') {
+      // 1. Off-white binder sheet
+      ctx.fillStyle = '#fcfbf7';
+      ctx.fillRect(0, 0, width, height);
+
+      // Ruling Lines
+      ctx.strokeStyle = '#c6daf0';
+      ctx.lineWidth = 1.2;
+      for (let y = paper.marginTop; y <= paper.marginBottom; y += paper.lineHeight) {
+        ctx.beginPath();
+        ctx.moveTo(paper.marginLeft - 20, y);
+        ctx.lineTo(paper.marginRight + 40, y);
+        ctx.stroke();
+      }
+
+      // Vertical red margin rule
+      ctx.strokeStyle = '#f87171';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(paper.marginLeft - 20, 80);
+      ctx.lineTo(paper.marginLeft - 20, height - 80);
+      ctx.stroke();
+
+      // 20 Punch Holes on Left Margin
+      const holeX = 90;
+      const holeRadius = 14;
+      const startHoleY = 160;
+      const endHoleY = height - 160;
+      const holeCount = 20;
+      const holeStep = (endHoleY - startHoleY) / (holeCount - 1);
+
+      for (let i = 0; i < holeCount; i++) {
+        const hy = startHoleY + i * holeStep;
+        // Inner shadow hole
+        ctx.fillStyle = '#2b2b2b';
+        ctx.beginPath();
+        ctx.arc(holeX, hy, holeRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Rim highlight
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    } else if (paper.id === 'yellow-legal-pad') {
+      // Yellow Legal Pad
+      ctx.fillStyle = '#fff6b8';
+      ctx.fillRect(0, 0, width, height);
+
+      // Horizontal blue lines
+      ctx.strokeStyle = '#93c5fd';
+      ctx.lineWidth = 1.4;
+      for (let y = paper.marginTop; y <= paper.marginBottom; y += paper.lineHeight) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      // Double vertical red margin lines
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(paper.marginLeft - 20, 0);
+      ctx.lineTo(paper.marginLeft - 20, height);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(paper.marginLeft - 14, 0);
+      ctx.lineTo(paper.marginLeft - 14, height);
+      ctx.stroke();
+
+      // Top brown leather binding header
+      ctx.fillStyle = '#78350f';
+      ctx.fillRect(0, 0, width, 100);
+
+      // Gold staples
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillRect(width * 0.25, 45, 60, 10);
+      ctx.fillRect(width * 0.75, 45, 60, 10);
+    } else if (paper.id === 'grid-math-paper') {
+      // Grid Math Paper
+      ctx.fillStyle = '#fafaf8';
+      ctx.fillRect(0, 0, width, height);
+
+      const gridSize = 30; // 30px grid boxes
+      ctx.lineWidth = 0.8;
+      for (let x = 60; x <= width - 60; x += gridSize) {
+        ctx.strokeStyle = (x % (gridSize * 5) === 0) ? '#93c5fd' : '#e2e8f0';
+        ctx.beginPath();
+        ctx.moveTo(x, 60);
+        ctx.lineTo(x, height - 60);
+        ctx.stroke();
+      }
+      for (let y = 60; y <= height - 60; y += gridSize) {
+        ctx.strokeStyle = (y % (gridSize * 5) === 0) ? '#93c5fd' : '#e2e8f0';
+        ctx.beginPath();
+        ctx.moveTo(60, y);
+        ctx.lineTo(width - 60, y);
+        ctx.stroke();
+      }
+    } else if (paper.id === 'dot-grid-bullet') {
+      // Dot Grid
+      ctx.fillStyle = '#fcfbf9';
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.fillStyle = '#94a3b8';
+      const dotSpacing = 35;
+      for (let x = 70; x < width - 70; x += dotSpacing) {
+        for (let y = 70; y < height - 70; y += dotSpacing) {
+          ctx.beginPath();
+          ctx.arc(x, y, 1.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    } else if (paper.id === 'vintage-parchment') {
+      // Vintage Parchment
+      ctx.fillStyle = '#f4e3c1';
+      ctx.fillRect(0, 0, width, height);
+
+      // Vignette burnt edges
+      const radGrad = ctx.createRadialGradient(
+        width * 0.5, height * 0.5, width * 0.35,
+        width * 0.5, height * 0.5, width * 0.75
+      );
+      radGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      radGrad.addColorStop(1, 'rgba(120, 70, 20, 0.45)');
+      ctx.fillStyle = radGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Soft brown ruling lines
+      ctx.strokeStyle = 'rgba(139, 94, 60, 0.35)';
+      ctx.lineWidth = 1.2;
+      for (let y = paper.marginTop; y <= paper.marginBottom; y += paper.lineHeight) {
+        ctx.beginPath();
+        ctx.moveTo(paper.marginLeft - 20, y);
+        ctx.lineTo(paper.marginRight + 20, y);
+        ctx.stroke();
+      }
+    } else if (paper.id === 'chalkboard-dark') {
+      // Chalkboard dark slate
+      ctx.fillStyle = '#1e242b';
+      ctx.fillRect(0, 0, width, height);
+
+      // Subtle chalk guide lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 1;
+      for (let y = paper.marginTop; y <= paper.marginBottom; y += paper.lineHeight) {
+        ctx.beginPath();
+        ctx.moveTo(paper.marginLeft - 20, y);
+        ctx.lineTo(paper.marginRight + 20, y);
+        ctx.stroke();
+      }
+    } else {
+      // Standard HVS
+      ctx.fillStyle = '#faf8f5';
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    // Add subtle organic paper grain
+    ctx.strokeStyle = paper.id === 'chalkboard-dark' ? 'rgba(255, 255, 255, 0.02)' : 'rgba(0, 0, 0, 0.015)';
     ctx.lineWidth = 1;
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 250; i++) {
       const rx = Math.random() * width;
       const ry = Math.random() * height;
       ctx.beginPath();
       ctx.moveTo(rx, ry);
-      ctx.lineTo(rx + Math.random() * 4, ry + Math.random() * 4);
+      ctx.lineTo(rx + Math.random() * 6, ry + Math.random() * 6);
       ctx.stroke();
     }
+
     ctx.restore();
   }
 
@@ -76,17 +239,23 @@ export function useCanvasRenderer() {
         ctx.drawImage(bgImg, 0, 0, paper.width, paper.height);
       } catch (e) {
         console.warn('Could not load paper background, falling back to procedural:', e);
-        drawProceduralPaper(ctx, paper.width, paper.height);
+        drawProceduralPaper(ctx, paper.width, paper.height, paper);
       }
     } else {
-      drawProceduralPaper(ctx, paper.width, paper.height);
+      drawProceduralPaper(ctx, paper.width, paper.height, paper);
     }
     ctx.restore();
 
-    // 2. Draw Header Fields (with multiply blend)
+    const isDarkPaper = paper.id === 'chalkboard-dark';
+    const effectiveInkColor = isDarkPaper
+      ? (typography.color === '#1b263b' || typography.color === '#111827' ? '#f8fafc' : typography.color)
+      : typography.color;
+    const blendMode = isDarkPaper ? 'screen' : 'multiply';
+
+    // 2. Draw Header Fields (with multiply/screen blend)
     ctx.save();
-    ctx.globalCompositeOperation = 'multiply';
-    ctx.fillStyle = typography.color;
+    ctx.globalCompositeOperation = blendMode;
+    ctx.fillStyle = effectiveInkColor;
     ctx.font = `${Math.round(typography.fontSize * 0.75)}px "${typography.fontFamily}", cursive, sans-serif`;
     ctx.textBaseline = 'alphabetic';
 
@@ -104,9 +273,9 @@ export function useCanvasRenderer() {
     }
     ctx.restore();
 
-    // 3. Draw Text Lines with Realistic Multiply Blending
+    // 3. Draw Text Lines with Realistic Multiply/Screen Blending
     ctx.save();
-    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalCompositeOperation = blendMode;
     const totalBaselineOffset = (typography.baselineOffset || 0) + (paper.baselineOffset || 0);
 
     for (const line of page.lines) {
@@ -129,7 +298,7 @@ export function useCanvasRenderer() {
         ctx.translate(word.x, word.y + totalBaselineOffset);
         ctx.rotate(word.rotation);
         ctx.globalAlpha = word.alpha;
-        ctx.fillStyle = word.color;
+        ctx.fillStyle = isDarkPaper && (word.color === '#1b263b' || word.color === '#111827') ? '#f8fafc' : word.color;
         ctx.font = `${typography.fontSize}px "${typography.fontFamily}", cursive, sans-serif`;
         ctx.textBaseline = 'alphabetic';
 
@@ -143,7 +312,7 @@ export function useCanvasRenderer() {
             0,
             word.width,
             typography.fontSize,
-            word.color,
+            ctx.fillStyle as string,
             word.wordIndex
           );
         }
@@ -154,7 +323,7 @@ export function useCanvasRenderer() {
     ctx.restore();
 
     // 4. Environmental Post-Processing
-    if (realism.enabled) {
+    if (realism.enabled && !isDarkPaper) {
       applyEnvironmentalEffects(ctx, paper.width, paper.height, realism);
     }
   }
