@@ -63,12 +63,12 @@ function resetBaseline() {
     <!-- 1. Pilihan Kertas HD (Jernih & Presisi) -->
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Template Kertas (HD Crisp)
         </label>
         <button
           @click="showScanPhotos = !showScanPhotos"
-          class="text-[10px] font-medium text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
+          class="liquid-glass-btn px-2 py-0.5 rounded-lg text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
         >
           {{ showScanPhotos ? 'Sembunyikan Foto' : '+ Opsi Foto Scan' }}
         </button>
@@ -81,15 +81,15 @@ function resetBaseline() {
           :key="paper.id"
           @click="paperStore.setPaper(paper.id)"
           :class="[
-            'flex items-center justify-between p-2.5 rounded-xl border text-left transition relative backdrop-blur-sm',
+            'liquid-glass-card flex items-center justify-between p-2.5 rounded-2xl text-left transition relative',
             paperStore.currentPaperId === paper.id
-              ? 'border-blue-500 bg-blue-50/70 dark:bg-blue-950/40 ring-1 ring-blue-500/20'
-              : 'border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] hover:border-slate-300 dark:hover:border-white/20',
+              ? 'border-blue-500/80 bg-blue-500/15 dark:bg-blue-500/20 ring-1 ring-blue-500/40 shadow-sm'
+              : 'hover:border-slate-300 dark:hover:border-white/20',
           ]"
         >
           <div class="flex items-center gap-2.5">
             <div
-              class="w-7 h-9 rounded-lg border flex items-center justify-center flex-shrink-0 shadow-sm text-[9px] font-bold font-mono"
+              class="w-7 h-9 rounded-xl border flex items-center justify-center flex-shrink-0 shadow-sm text-[9px] font-bold font-mono"
               :class="[
                 paper.id.includes('foto')
                   ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:border-amber-800'
@@ -113,7 +113,7 @@ function resetBaseline() {
     <!-- 2. Pilihan Font Tulisan Rapi -->
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Font Tulisan Tangan
         </label>
         <div>
@@ -127,7 +127,7 @@ function resetBaseline() {
           <button
             @click="fileInputRef?.click()"
             :disabled="isLoading"
-            class="inline-flex items-center gap-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-semibold text-blue-600 dark:text-blue-400"
           >
             <Upload class="w-3 h-3" />
             <span>{{ isLoading ? 'Memuat...' : 'Upload Font' }}</span>
@@ -142,10 +142,10 @@ function resetBaseline() {
           :key="font.id"
           @click="selectFont(font)"
           :class="[
-            'w-full p-2.5 rounded-xl border text-left transition flex flex-col gap-0.5 backdrop-blur-sm',
+            'liquid-glass-card w-full p-2.5 rounded-2xl text-left transition flex flex-col gap-0.5',
             styleStore.typography.fontFamily === font.family
-              ? 'border-blue-500 bg-blue-50/70 dark:bg-blue-950/40 ring-1 ring-blue-500/20'
-              : 'border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] hover:border-slate-300 dark:hover:border-white/20',
+              ? 'border-blue-500/80 bg-blue-500/15 dark:bg-blue-500/20 ring-1 ring-blue-500/40 shadow-sm'
+              : 'hover:border-slate-300 dark:hover:border-white/20',
           ]"
         >
           <div class="flex items-center justify-between w-full">
@@ -168,10 +168,10 @@ function resetBaseline() {
           :key="cFont.family"
           @click="styleStore.typography.fontFamily = cFont.family"
           :class="[
-            'w-full p-2.5 rounded-xl border text-left transition flex flex-col gap-0.5 backdrop-blur-sm',
+            'liquid-glass-card w-full p-2.5 rounded-2xl text-left transition flex flex-col gap-0.5',
             styleStore.typography.fontFamily === cFont.family
-              ? 'border-blue-500 bg-blue-50/70 dark:bg-blue-950/40 ring-1 ring-blue-500/20'
-              : 'border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] hover:border-slate-300',
+              ? 'border-blue-500/80 bg-blue-500/15 dark:bg-blue-500/20 ring-1 ring-blue-500/40 shadow-sm'
+              : 'hover:border-slate-300',
           ]"
         >
           <div class="flex items-center justify-between w-full">
@@ -188,7 +188,7 @@ function resetBaseline() {
     <!-- 3. Warna Tinta Pulpen -->
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Warna Tinta Pulpen
         </label>
         <span class="text-[10px] font-mono text-slate-400 uppercase">{{ styleStore.typography.color }}</span>
@@ -201,18 +201,18 @@ function resetBaseline() {
           :class="[
             'w-7 h-7 rounded-full border-2 transition shadow-sm flex items-center justify-center relative',
             styleStore.typography.color === ink.hex
-              ? 'border-blue-500 ring-2 ring-blue-500/30 scale-110'
-              : 'border-white dark:border-slate-800 hover:scale-105',
+              ? 'border-blue-500 ring-2 ring-blue-500/40 scale-110 shadow-md'
+              : 'border-white dark:border-slate-700 hover:scale-105',
           ]"
           :style="{ backgroundColor: ink.hex }"
           :title="ink.name"
         >
-          <Check v-if="styleStore.typography.color === ink.hex" class="w-3 h-3 text-white" />
+          <Check v-if="styleStore.typography.color === ink.hex" class="w-3.5 h-3.5 text-white drop-shadow" />
         </button>
 
         <!-- Custom Color Picker -->
         <label
-          class="w-7 h-7 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center cursor-pointer hover:border-blue-500 transition relative overflow-hidden"
+          class="w-7 h-7 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center cursor-pointer hover:border-blue-500 hover:scale-105 transition relative overflow-hidden"
           title="Pilih warna kustom"
         >
           <input
@@ -225,13 +225,13 @@ function resetBaseline() {
       </div>
     </div>
 
-    <!-- 4. Penyelarasan Garis & Ukuran (macOS Glass Card) -->
-    <div class="backdrop-blur-xl bg-white/60 dark:bg-white/[0.03] p-3.5 rounded-2xl border border-slate-200/70 dark:border-white/10 space-y-3.5 shadow-sm">
+    <!-- 4. Penyelarasan Garis & Ukuran (Liquid Glass Card) -->
+    <div class="liquid-glass-card p-4 rounded-3xl space-y-3.5">
       <!-- Font Size Slider -->
       <div>
         <div class="flex justify-between text-xs mb-1">
           <span class="font-semibold text-slate-700 dark:text-slate-300">Ukuran Huruf</span>
-          <span class="font-mono text-blue-600 dark:text-blue-400 font-semibold">{{ styleStore.typography.fontSize }}px</span>
+          <span class="font-mono text-blue-600 dark:text-blue-400 font-bold">{{ styleStore.typography.fontSize }}px</span>
         </div>
         <input
           v-model.number="styleStore.typography.fontSize"
@@ -250,13 +250,13 @@ function resetBaseline() {
             <span class="font-semibold text-slate-700 dark:text-slate-300">Penyelarasan Garis Buku</span>
             <button
               @click="resetBaseline"
-              class="text-[10px] text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              class="text-[10px] text-blue-600 dark:text-blue-400 hover:underline font-semibold"
               title="Reset ke posisi pas garis"
             >
               (Reset)
             </button>
           </div>
-          <span class="font-mono text-blue-600 dark:text-blue-400 font-semibold">{{ styleStore.typography.baselineOffset }}px</span>
+          <span class="font-mono text-blue-600 dark:text-blue-400 font-bold">{{ styleStore.typography.baselineOffset }}px</span>
         </div>
         <input
           v-model.number="styleStore.typography.baselineOffset"
@@ -272,11 +272,11 @@ function resetBaseline() {
       </div>
     </div>
 
-    <!-- 5. Efek Foto Kamera Asli (Toggle Simpel) -->
-    <div class="flex items-center justify-between p-3 rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/60 dark:bg-white/[0.03] backdrop-blur-xl">
+    <!-- 5. Efek Foto Kamera Asli (Liquid Glass Card) -->
+    <div class="liquid-glass-card flex items-center justify-between p-3.5 rounded-2xl">
       <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
-          <Camera class="w-3.5 h-3.5" />
+        <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 border border-blue-500/20">
+          <Camera class="w-4 h-4" />
         </div>
         <div>
           <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">Efek Foto Kamera Asli</p>
@@ -290,7 +290,7 @@ function resetBaseline() {
           type="checkbox"
           class="sr-only peer"
         />
-        <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+        <div class="w-10 h-5.5 bg-slate-300/80 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
       </label>
     </div>
   </div>

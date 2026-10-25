@@ -123,3 +123,221 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(150, 150, 150, 0.5);
 }
+
+/* ==========================================================================
+   CSS LIQUID GLASS SYSTEM (Apple iOS / macOS 26 Tactile Lens)
+   Reference: https://freefrontend.com/css-liquid-glass/
+   Key optical attributes: Opposing dual-rim highlights, hairline meniscus,
+   refractive depth caustics, and backdrop-filter blur/saturate.
+   ========================================================================== */
+
+/* 1. Main Liquid Glass Panel (Sidebar, Big Windows) */
+.liquid-glass-panel {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.4) 100%);
+  backdrop-filter: blur(24px) saturate(190%) contrast(102%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%) contrast(102%);
+  border-right: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 1.5px -1.5px 1px -1px rgba(255, 255, 255, 0.9),
+    inset -1.5px 1.5px 1px -1px rgba(255, 255, 255, 0.9),
+    0 10px 40px -10px rgba(0, 0, 0, 0.08);
+}
+
+.dark .liquid-glass-panel {
+  background: linear-gradient(135deg, rgba(20, 28, 45, 0.68) 0%, rgba(10, 15, 26, 0.72) 100%);
+  backdrop-filter: blur(24px) saturate(180%) contrast(105%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) contrast(105%);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 1.5px -1.5px 1px -1px rgba(255, 255, 255, 0.22),
+    inset -1.5px 1.5px 1px -1px rgba(255, 255, 255, 0.22),
+    0 12px 40px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* 2. Liquid Glass Card (Grouped sections, form containers) */
+.liquid-glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.25) 100%);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow:
+    inset 2px -2px 1.5px -1.5px rgba(255, 255, 255, 0.95),
+    inset -2px 2px 1.5px -1.5px rgba(255, 255, 255, 0.95),
+    inset 0 0 10px 0 rgba(255, 255, 255, 0.25),
+    0 8px 24px -4px rgba(0, 0, 0, 0.05);
+}
+
+.dark .liquid-glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 1.5px -1.5px 1px -1px rgba(255, 255, 255, 0.22),
+    inset -1.5px 1.5px 1px -1px rgba(255, 255, 255, 0.22),
+    0 8px 24px -4px rgba(0, 0, 0, 0.35);
+}
+
+/* 3. Liquid Glass Capsule & Segment Controls */
+.liquid-glass-capsule {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.2) 100%);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 1.5px -1.5px 1px -1px rgba(255, 255, 255, 0.9),
+    inset -1.5px 1.5px 1px -1px rgba(255, 255, 255, 0.9),
+    0 4px 16px -2px rgba(0, 0, 0, 0.06);
+}
+
+.dark .liquid-glass-capsule {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 1.5px -1.5px 1px -1px rgba(255, 255, 255, 0.25),
+    inset -1.5px 1.5px 1px -1px rgba(255, 255, 255, 0.25),
+    0 4px 16px -2px rgba(0, 0, 0, 0.35);
+}
+
+/* 4. Liquid Glass Buttons */
+.liquid-glass-btn {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.35) 100%);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow:
+    inset 1.5px -1.5px 1px -1px rgba(255, 255, 255, 0.95),
+    inset -1.5px 1.5px 1px -1px rgba(255, 255, 255, 0.95),
+    0 2px 8px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.5) 100%);
+  box-shadow:
+    inset 2px -2px 1.5px -1px rgba(255, 255, 255, 1),
+    inset -2px 2px 1.5px -1px rgba(255, 255, 255, 1),
+    0 6px 16px -2px rgba(0, 0, 0, 0.1);
+  transform: translateY(-0.5px);
+}
+
+.liquid-glass-btn:active {
+  transform: scale(0.96);
+  box-shadow:
+    inset 1px 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.dark .liquid-glass-btn {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 1.5px -1.5px 1px -1px rgba(255, 255, 255, 0.25),
+    inset -1.5px 1.5px 1px -1px rgba(255, 255, 255, 0.25),
+    0 3px 10px -2px rgba(0, 0, 0, 0.35);
+}
+
+.dark .liquid-glass-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.07) 100%);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow:
+    inset 2px -2px 1.5px -1px rgba(255, 255, 255, 0.35),
+    inset -2px 2px 1.5px -1px rgba(255, 255, 255, 0.35),
+    0 6px 18px -2px rgba(0, 0, 0, 0.5);
+}
+
+.dark .liquid-glass-btn:active {
+  transform: scale(0.96);
+}
+
+/* 5. Liquid Glass Primary Lens Button (iOS Blue Glow) */
+.liquid-glass-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    inset 2px -2px 1.5px -1px rgba(255, 255, 255, 0.75),
+    inset -2px 2px 1.5px -1px rgba(255, 255, 255, 0.75),
+    0 6px 20px -3px rgba(37, 99, 235, 0.45);
+  color: white;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.liquid-glass-primary:hover {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #2563eb 100%);
+  box-shadow:
+    inset 2.5px -2.5px 2px -1px rgba(255, 255, 255, 0.9),
+    inset -2.5px 2.5px 2px -1px rgba(255, 255, 255, 0.9),
+    0 8px 24px -3px rgba(37, 99, 235, 0.6);
+  transform: translateY(-0.5px);
+}
+
+.liquid-glass-primary:active {
+  transform: scale(0.96);
+  box-shadow:
+    inset 1.5px 1.5px 3px 0 rgba(0, 0, 0, 0.35),
+    0 2px 8px 0 rgba(37, 99, 235, 0.3);
+}
+
+/* 6. Liquid Glass Input / Textarea (Inner liquid refraction) */
+.liquid-glass-input {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    inset 1.5px 1.5px 3px 0 rgba(0, 0, 0, 0.04),
+    inset -1px -1px 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.2s ease;
+}
+
+.liquid-glass-input:focus {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.45) 100%);
+  border-color: rgba(59, 130, 246, 0.7);
+  box-shadow:
+    inset 1px 1px 2px 0 rgba(0, 0, 0, 0.03),
+    0 0 0 3.5px rgba(59, 130, 246, 0.22),
+    0 6px 20px -3px rgba(37, 99, 235, 0.15);
+}
+
+.dark .liquid-glass-input {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 2px 2px 4px 0 rgba(0, 0, 0, 0.3),
+    inset -1px -1px 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dark .liquid-glass-input:focus {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border-color: rgba(96, 165, 250, 0.6);
+  box-shadow:
+    inset 1.5px 1.5px 3px 0 rgba(0, 0, 0, 0.25),
+    0 0 0 3.5px rgba(59, 130, 246, 0.3),
+    0 6px 20px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* 7. Liquid Glass Popover / Modal Menu */
+.liquid-glass-popover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.6) 100%);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset 2px -2px 1.5px -1px rgba(255, 255, 255, 0.95),
+    inset -2px 2px 1.5px -1px rgba(255, 255, 255, 0.95),
+    0 20px 50px -10px rgba(0, 0, 0, 0.15),
+    0 8px 16px -4px rgba(0, 0, 0, 0.08);
+}
+
+.dark .liquid-glass-popover {
+  background: linear-gradient(135deg, rgba(24, 32, 50, 0.85) 0%, rgba(15, 23, 42, 0.88) 100%);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 2px -2px 1.5px -1px rgba(255, 255, 255, 0.25),
+    inset -2px 2px 1.5px -1px rgba(255, 255, 255, 0.25),
+    0 20px 50px -10px rgba(0, 0, 0, 0.6);
+}

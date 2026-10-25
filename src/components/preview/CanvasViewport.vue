@@ -191,15 +191,15 @@ function handleDownloadZip() {
 </script>
 
 <template>
-  <div class="flex-1 flex flex-col h-full bg-[#f1f3f6] dark:bg-[#0c101a] overflow-hidden relative transition-colors">
-    <!-- Top macOS Glass Control Bar -->
-    <header class="h-14 border-b border-slate-200/60 dark:border-white/10 backdrop-blur-2xl bg-white/70 dark:bg-slate-900/70 px-4 flex items-center justify-between z-10 flex-shrink-0">
-      <!-- Page Navigation Pill (macOS Segmented Style) -->
-      <div class="flex items-center gap-1.5 bg-black/[0.04] dark:bg-white/[0.06] p-1 rounded-xl border border-black/5 dark:border-white/5">
+  <div class="flex-1 flex flex-col h-full bg-transparent overflow-hidden relative transition-colors">
+    <!-- Top macOS Liquid Glass Control Bar -->
+    <header class="h-14 border-b border-white/40 dark:border-white/10 bg-white/30 dark:bg-slate-900/35 backdrop-blur-2xl px-4 flex items-center justify-between z-10 flex-shrink-0">
+      <!-- Page Navigation Pill (Liquid Glass Capsule) -->
+      <div class="liquid-glass-capsule p-1 rounded-2xl flex items-center gap-1">
         <button
           @click="documentStore.setPage(documentStore.currentPageIndex - 1)"
           :disabled="documentStore.currentPageIndex === 0"
-          class="p-1 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/15 disabled:opacity-25 disabled:cursor-not-allowed transition shadow-none hover:shadow-sm"
+          class="p-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/20 disabled:opacity-25 disabled:cursor-not-allowed transition"
           title="Halaman Sebelumnya"
         >
           <ChevronLeft class="w-3.5 h-3.5" />
@@ -209,7 +209,7 @@ function handleDownloadZip() {
         <select
           :value="documentStore.currentPageIndex"
           @change="(e) => documentStore.setPage(Number((e.target as HTMLSelectElement).value))"
-          class="text-xs font-semibold text-slate-800 dark:text-slate-200 bg-transparent px-2 py-0.5 cursor-pointer outline-none rounded"
+          class="text-xs font-semibold text-slate-800 dark:text-slate-200 bg-transparent px-2 py-0.5 cursor-pointer outline-none rounded-lg hover:bg-white/50 dark:hover:bg-white/10 transition"
         >
           <option v-for="(_, idx) in pages" :key="idx" :value="idx" class="dark:bg-slate-900">
             Halaman {{ idx + 1 }} dari {{ documentStore.totalPages }}
@@ -219,25 +219,26 @@ function handleDownloadZip() {
         <button
           @click="documentStore.setPage(documentStore.currentPageIndex + 1)"
           :disabled="documentStore.currentPageIndex >= documentStore.totalPages - 1"
-          class="p-1 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/15 disabled:opacity-25 disabled:cursor-not-allowed transition shadow-none hover:shadow-sm"
+          class="p-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-white/80 dark:hover:bg-white/20 disabled:opacity-25 disabled:cursor-not-allowed transition"
           title="Halaman Selanjutnya"
         >
           <ChevronRight class="w-3.5 h-3.5" />
         </button>
       </div>
 
-      <!-- Center Title or Subtle Identifier -->
-      <div class="text-[11px] font-medium text-slate-400 dark:text-slate-500 hidden md:block">
-        {{ paperStore.currentPaper?.name }}
+      <!-- Center Title or Paper Identifier -->
+      <div class="text-[11px] font-medium text-slate-400 dark:text-slate-500 hidden md:flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-500/80"></span>
+        <span>{{ paperStore.currentPaper?.name }}</span>
       </div>
 
-      <!-- Right Controls: Zoom & Export -->
+      <!-- Right Controls: Zoom, Copy & Export -->
       <div class="flex items-center gap-2">
-        <!-- Zoom Controls Capsule -->
-        <div class="hidden sm:flex items-center gap-1 bg-black/[0.04] dark:bg-white/[0.06] p-1 rounded-xl border border-black/5 dark:border-white/5 text-xs">
+        <!-- Zoom Controls Liquid Capsule -->
+        <div class="hidden sm:flex items-center gap-1 liquid-glass-capsule p-1 rounded-2xl text-xs">
           <button
             @click="zoom = Math.max(40, zoom - 10)"
-            class="p-1 hover:bg-white dark:hover:bg-white/15 rounded-lg text-slate-600 dark:text-slate-300 transition"
+            class="p-1 hover:bg-white/80 dark:hover:bg-white/20 rounded-xl text-slate-600 dark:text-slate-300 transition"
             title="Perkecil (-)"
           >
             <ZoomOut class="w-3.5 h-3.5" />
@@ -245,24 +246,24 @@ function handleDownloadZip() {
           <span class="w-10 text-center font-mono font-medium text-[11px] text-slate-700 dark:text-slate-300">{{ zoom }}%</span>
           <button
             @click="zoom = Math.min(160, zoom + 10)"
-            class="p-1 hover:bg-white dark:hover:bg-white/15 rounded-lg text-slate-600 dark:text-slate-300 transition"
+            class="p-1 hover:bg-white/80 dark:hover:bg-white/20 rounded-xl text-slate-600 dark:text-slate-300 transition"
             title="Perbesar (+)"
           >
             <ZoomIn class="w-3.5 h-3.5" />
           </button>
           <button
             @click="fitToScreen"
-            class="p-1 hover:bg-white dark:hover:bg-white/15 rounded-lg text-slate-600 dark:text-slate-300 transition"
+            class="p-1 hover:bg-white/80 dark:hover:bg-white/20 rounded-xl text-slate-600 dark:text-slate-300 transition"
             title="Paskan Layar (Fit Screen)"
           >
             <Maximize2 class="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <!-- Copy Image Glass Button -->
+        <!-- Copy Image Liquid Glass Button -->
         <button
           @click="handleCopy"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition shadow-sm backdrop-blur-sm"
+          class="liquid-glass-btn inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-2xl text-slate-700 dark:text-slate-200"
           title="Salin gambar halaman ini ke clipboard"
         >
           <Check v-if="copied" class="w-3.5 h-3.5 text-emerald-500" />
@@ -270,65 +271,65 @@ function handleDownloadZip() {
           <span>{{ copied ? 'Tersalin' : 'Salin' }}</span>
         </button>
 
-        <!-- macOS Blue Simpan Button -->
+        <!-- macOS Blue Simpan Primary Button -->
         <div class="relative export-menu-container">
           <button
             @click="showExportMenu = !showExportMenu"
-            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-sm transition"
+            class="liquid-glass-primary inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-2xl"
           >
             <Download class="w-3.5 h-3.5" />
             <span>Simpan</span>
-            <ChevronDown class="w-3 h-3 ml-0.5 opacity-70" />
+            <ChevronDown class="w-3 h-3 ml-0.5 opacity-80" />
           </button>
 
-          <!-- macOS Frosted Glass Dropdown Popover -->
+          <!-- Liquid Glass Dropdown Popover -->
           <div
             v-if="showExportMenu"
-            class="absolute right-0 mt-2 w-56 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/90 dark:bg-slate-900/90 shadow-2xl backdrop-blur-2xl p-1.5 space-y-1 z-30"
+            class="liquid-glass-popover absolute right-0 mt-2 w-60 rounded-3xl p-2 space-y-1 z-30"
           >
             <button
               @click="handleDownloadPDF"
               :disabled="isExporting"
-              class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-left hover:bg-blue-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition"
+              class="w-full flex items-center gap-2.5 px-3 py-2 rounded-2xl text-xs font-medium text-left hover:bg-blue-500/10 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition"
             >
               <FileText class="w-4 h-4 text-blue-600 dark:text-blue-400" />
               <div>
                 <p class="font-semibold leading-tight">Dokumen PDF</p>
-                <p class="text-[10px] text-slate-400">Seluruh halaman tugas</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-400">Seluruh halaman tugas</p>
               </div>
             </button>
 
             <button
               @click="handleDownloadJPG"
-              class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-left hover:bg-blue-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition"
+              class="w-full flex items-center gap-2.5 px-3 py-2 rounded-2xl text-xs font-medium text-left hover:bg-emerald-500/10 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition"
             >
               <FileImage class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <div>
                 <p class="font-semibold leading-tight">Gambar JPG (Hal. {{ documentStore.currentPageIndex + 1 }})</p>
-                <p class="text-[10px] text-slate-400">Format gambar standar</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-400">Format gambar standar</p>
               </div>
             </button>
 
             <button
               @click="handleDownloadPNG"
-              class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-left hover:bg-blue-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition"
+              class="w-full flex items-center gap-2.5 px-3 py-2 rounded-2xl text-xs font-medium text-left hover:bg-indigo-500/10 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition"
             >
               <FileImage class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               <div>
                 <p class="font-semibold leading-tight">Gambar PNG HD</p>
-                <p class="text-[10px] text-slate-400">Resolusi maksimal jernih</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-400">Resolusi maksimal jernih</p>
               </div>
             </button>
 
             <button
               @click="handleDownloadZip"
               :disabled="isExporting"
-              class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-left hover:bg-blue-50 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition"
+              class="w-full flex items-center gap-2.5 px-3 py-2 rounded-2xl text-xs font-medium text-left hover:bg-amber-500/10 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 transition"
             >
               <FileArchive class="w-4 h-4 text-amber-600 dark:text-amber-400" />
               <div>
                 <p class="font-semibold leading-tight">Arsip ZIP</p>
-                <p class="text-[10px] text-slate-400">Semua halaman dibundel</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-400">Semua halaman dibundel</p>
               </div>
             </button>
           </div>
@@ -354,7 +355,7 @@ function handleDownloadZip() {
         </div>
       </div>
 
-      <!-- Toast Notification Alert (macOS Capsule Style) -->
+      <!-- Toast Notification Alert (Liquid Glass Capsule) -->
       <transition
         enter-active-class="transition duration-200 ease-out"
         enter-from-class="transform translate-y-4 opacity-0"
@@ -365,35 +366,35 @@ function handleDownloadZip() {
       >
         <div
           v-if="toastMessage"
-          class="absolute bottom-10 bg-slate-900/85 dark:bg-slate-800/90 text-white px-4 py-2 rounded-full shadow-2xl backdrop-blur-2xl text-xs flex items-center gap-2 z-40 border border-white/10"
+          class="liquid-glass-popover absolute bottom-10 text-slate-800 dark:text-white px-5 py-2.5 rounded-full shadow-2xl text-xs flex items-center gap-2.5 z-40"
         >
-          <Check class="w-3.5 h-3.5 text-emerald-400 flex-shrink-0" />
-          <span>{{ toastMessage }}</span>
+          <Check class="w-4 h-4 text-emerald-500 flex-shrink-0" />
+          <span class="font-medium">{{ toastMessage }}</span>
         </div>
       </transition>
 
-      <!-- Export Progress Modal (macOS Style) -->
+      <!-- Export Progress Modal (Liquid Glass Popover) -->
       <div
         v-if="isExporting"
-        class="absolute bottom-10 bg-slate-900/90 dark:bg-slate-800/95 text-white px-5 py-3 rounded-2xl shadow-2xl backdrop-blur-2xl flex items-center gap-3 z-30 border border-white/10"
+        class="liquid-glass-popover absolute bottom-10 text-slate-800 dark:text-white px-6 py-3.5 rounded-3xl shadow-2xl flex items-center gap-3.5 z-30"
       >
-        <svg class="animate-spin h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24">
+        <svg class="animate-spin h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
         </svg>
         <div class="text-xs">
           <p class="font-semibold">Mengekspor Dokumen...</p>
-          <p class="text-slate-400 text-[11px]">Memproses: {{ exportProgress }}%</p>
+          <p class="text-slate-400 dark:text-slate-400 text-[11px]">Memproses: {{ exportProgress }}%</p>
         </div>
       </div>
     </main>
 
-    <!-- Bottom Thumbnail Filmstrip (If multi-page) -->
+    <!-- Bottom Thumbnail Filmstrip (Liquid Glass Footer) -->
     <footer
       v-if="documentStore.totalPages > 1"
-      class="h-14 border-t border-slate-200/60 dark:border-white/10 backdrop-blur-2xl bg-white/70 dark:bg-slate-900/70 px-4 flex items-center gap-2 overflow-x-auto z-10 flex-shrink-0"
+      class="h-14 border-t border-white/40 dark:border-white/10 bg-white/30 dark:bg-slate-900/35 backdrop-blur-2xl px-4 flex items-center gap-2 overflow-x-auto z-10 flex-shrink-0"
     >
-      <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap mr-1">
+      <span class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider whitespace-nowrap mr-1">
         Halaman:
       </span>
       <div class="flex items-center gap-1.5">
@@ -402,10 +403,10 @@ function handleDownloadZip() {
           :key="idx"
           @click="documentStore.setPage(idx)"
           :class="[
-            'px-2.5 py-1 text-xs font-medium rounded-lg transition whitespace-nowrap',
+            'px-3 py-1 text-xs font-medium rounded-xl transition whitespace-nowrap',
             documentStore.currentPageIndex === idx
-              ? 'bg-blue-600 text-white shadow-sm font-semibold'
-              : 'bg-black/[0.04] dark:bg-white/[0.05] text-slate-600 dark:text-slate-300 hover:bg-black/[0.08]',
+              ? 'liquid-glass-primary font-bold shadow-sm'
+              : 'liquid-glass-btn text-slate-600 dark:text-slate-300',
           ]"
         >
           {{ idx + 1 }}

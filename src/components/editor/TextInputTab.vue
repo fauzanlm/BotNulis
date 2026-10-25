@@ -160,15 +160,15 @@ const wordCount = computed(() => {
 
 <template>
   <div class="space-y-4 p-4">
-    <!-- Header Section (macOS Frosted Glass Card) -->
-    <div class="backdrop-blur-xl bg-white/60 dark:bg-white/[0.03] p-3.5 rounded-2xl border border-slate-200/70 dark:border-white/10 space-y-2.5 shadow-sm">
+    <!-- Header Section (Liquid Glass Card) -->
+    <div class="liquid-glass-card p-3.5 rounded-2xl space-y-2.5">
       <div class="flex items-center justify-between">
-        <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <h3 class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Header Kertas
         </h3>
         <button
           @click="extractHeaderFromText"
-          class="inline-flex items-center gap-1 text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-medium"
+          class="inline-flex items-center gap-1 text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-semibold"
           title="Ekstrak Nama, NIM dari teks otomatis"
         >
           <Wand2 class="w-3 h-3" />
@@ -183,7 +183,7 @@ const wordCount = computed(() => {
             v-model="documentStore.header.name"
             type="text"
             placeholder="Nama Lengkap & NIM..."
-            class="w-full text-xs px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-white/[0.05] text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+            class="liquid-glass-input w-full text-xs px-3 py-1.5 rounded-xl text-slate-800 dark:text-slate-100 outline-none"
           />
         </div>
 
@@ -193,16 +193,16 @@ const wordCount = computed(() => {
             v-model="documentStore.header.date"
             type="text"
             placeholder="DD/MM/YYYY"
-            class="w-full text-xs px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-white/[0.05] text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+            class="liquid-glass-input w-full text-xs px-3 py-1.5 rounded-xl text-slate-800 dark:text-slate-100 outline-none"
           />
         </div>
       </div>
     </div>
 
     <!-- Main Text Section -->
-    <div class="space-y-2">
+    <div class="space-y-2.5">
       <div class="flex items-center justify-between">
-        <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Isi Tulisan Tangan
         </label>
 
@@ -210,7 +210,7 @@ const wordCount = computed(() => {
         <div class="flex items-center gap-1.5">
           <button
             @click="insertAssignmentTemplate"
-            class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100/70 transition"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-xl text-blue-600 dark:text-blue-400"
             title="Tempel contoh format tugas mahasiswa/pelajar"
           >
             <FileCheck class="w-3.5 h-3.5" />
@@ -219,7 +219,7 @@ const wordCount = computed(() => {
 
           <button
             @click="documentStore.resetToSample"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-xl text-slate-400 hover:text-rose-500 transition"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-xl text-slate-400 hover:text-rose-500"
             title="Reset teks ke awal"
           >
             <RotateCcw class="w-3 h-3" />
@@ -228,12 +228,12 @@ const wordCount = computed(() => {
         </div>
       </div>
 
-      <!-- Quick Formatting Glass Bar -->
+      <!-- Quick Formatting Liquid Glass Bar -->
       <div class="flex flex-wrap items-center justify-between gap-1.5">
         <div class="flex flex-wrap items-center gap-1">
           <button
             @click="insertTag('~~', '~~')"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white text-slate-700 dark:text-slate-300 transition"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-xl text-slate-700 dark:text-slate-300"
             title="Coretan kata pulpen alami"
           >
             <Strikethrough class="w-3 h-3 text-rose-500" />
@@ -242,7 +242,7 @@ const wordCount = computed(() => {
 
           <button
             @click="insertTag('[merah]', '[/merah]')"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-red-200/80 dark:border-red-900/40 bg-red-50/50 dark:bg-red-950/20 text-red-600 dark:text-red-300 transition"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-xl text-red-600 dark:text-red-400 border-red-300/40 dark:border-red-800/40"
             title="Tinta Pulpen Merah"
           >
             <Palette class="w-3 h-3 text-red-500" />
@@ -251,7 +251,7 @@ const wordCount = computed(() => {
 
           <button
             @click="insertTag('[biru]', '[/biru]')"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-blue-200/80 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-300 transition"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-xl text-blue-600 dark:text-blue-400 border-blue-300/40 dark:border-blue-800/40"
             title="Tinta Pulpen Biru"
           >
             <Palette class="w-3 h-3 text-blue-500" />
@@ -260,7 +260,7 @@ const wordCount = computed(() => {
 
           <button
             @click="insertTag('==', '==')"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-amber-200/80 dark:border-amber-900/40 bg-amber-50/50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-300 transition"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-xl text-amber-600 dark:text-amber-400 border-amber-300/40 dark:border-amber-800/40"
             title="Stabilo Kuning"
           >
             <Highlighter class="w-3 h-3 text-amber-500" />
@@ -269,7 +269,7 @@ const wordCount = computed(() => {
 
           <button
             @click="insertTabIndent"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white text-slate-700 dark:text-slate-300 transition"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-xl text-slate-700 dark:text-slate-300"
             title="Indent Paragraf (4 spasi)"
           >
             <Indent class="w-3 h-3 text-blue-500" />
@@ -281,7 +281,7 @@ const wordCount = computed(() => {
         <div class="flex items-center gap-1">
           <button
             @click="removeAllEmptyLines"
-            class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 transition"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-xl text-blue-600 dark:text-blue-400 border-blue-400/40"
             title="Hapus SEMUA baris kosong agar tulisan rapat di kertas buku"
           >
             <Eraser class="w-3 h-3" />
@@ -290,7 +290,7 @@ const wordCount = computed(() => {
 
           <button
             @click="compactEmptyLines"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white text-slate-600 dark:text-slate-300 transition"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-xl text-slate-600 dark:text-slate-300"
             title="Maksimal 1 baris kosong antar paragraf"
           >
             <WrapText class="w-3 h-3 opacity-60" />
@@ -299,13 +299,13 @@ const wordCount = computed(() => {
         </div>
       </div>
 
-      <!-- Main Textarea (macOS Glass Box) -->
+      <!-- Main Textarea (Liquid Glass Lens Box) -->
       <textarea
         ref="textareaRef"
         v-model="documentStore.text"
         rows="17"
         placeholder="Ketik atau tempel teks tugas di sini..."
-        class="w-full text-xs font-mono leading-relaxed p-3.5 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-white/[0.04] text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none shadow-sm transition backdrop-blur-sm"
+        class="liquid-glass-input w-full text-xs font-mono leading-relaxed p-4 rounded-2xl outline-none resize-none"
         @keydown="handleKeydown"
       ></textarea>
 
@@ -316,7 +316,7 @@ const wordCount = computed(() => {
           <span>•</span>
           <span>{{ wordCount }} kata</span>
         </div>
-        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 font-medium text-[10px]">
+        <span class="liquid-glass-capsule inline-flex items-center gap-1 px-3 py-1 rounded-full text-slate-600 dark:text-slate-300 font-semibold text-[10px]">
           Total: {{ documentStore.totalPages }} Halaman
         </span>
       </div>

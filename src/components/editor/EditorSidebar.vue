@@ -23,61 +23,62 @@ const toggleDark = useToggle(isDark);
 </script>
 
 <template>
-  <aside class="w-full md:w-[400px] lg:w-[440px] h-full flex flex-col backdrop-blur-2xl bg-white/75 dark:bg-slate-900/75 border-r border-slate-200/70 dark:border-white/10 z-20 flex-shrink-0 transition-colors">
+  <aside class="w-full md:w-[400px] lg:w-[440px] h-full flex flex-col liquid-glass-panel z-20 flex-shrink-0 transition-colors">
     <!-- macOS Window Chrome & Titlebar -->
-    <div class="h-14 border-b border-slate-200/60 dark:border-white/10 px-4 flex items-center justify-between bg-white/40 dark:bg-white/[0.02]">
+    <div class="h-14 border-b border-white/40 dark:border-white/10 px-4 flex items-center justify-between bg-white/20 dark:bg-white/[0.02]">
       <!-- macOS Traffic Light Window Controls -->
       <div class="flex items-center gap-2">
-        <span class="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]/40 shadow-sm inline-block"></span>
-        <span class="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]/40 shadow-sm inline-block"></span>
-        <span class="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]/40 shadow-sm inline-block"></span>
-        <span class="ml-2 text-xs font-semibold tracking-tight text-slate-800 dark:text-slate-200">
+        <span class="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]/50 shadow-[0_1px_3px_rgba(224,68,62,0.4)] inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]/50 shadow-[0_1px_3px_rgba(222,161,35,0.4)] inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]/50 shadow-[0_1px_3px_rgba(26,171,41,0.4)] inline-block"></span>
+        <span class="ml-2 text-xs font-bold tracking-tight text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
           BotNulis
+          <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-blue-500/10 dark:bg-blue-400/15 text-blue-600 dark:text-blue-300 font-semibold border border-blue-500/20">HD</span>
         </span>
       </div>
 
       <!-- Quick Actions (Undo, Redo, Theme) -->
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1.5">
         <button
           @click="documentStore.undo"
           :disabled="!documentStore.canUndo"
-          class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+          class="liquid-glass-btn p-1.5 rounded-xl text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white disabled:opacity-25 disabled:cursor-not-allowed disabled:transform-none"
           title="Undo (Ctrl+Z / Cmd+Z)"
         >
-          <Undo2 class="w-4 h-4" />
+          <Undo2 class="w-3.5 h-3.5" />
         </button>
 
         <button
           @click="documentStore.redo"
           :disabled="!documentStore.canRedo"
-          class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+          class="liquid-glass-btn p-1.5 rounded-xl text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white disabled:opacity-25 disabled:cursor-not-allowed disabled:transform-none"
           title="Redo (Ctrl+Y / Cmd+Shift+Z)"
         >
-          <Redo2 class="w-4 h-4" />
+          <Redo2 class="w-3.5 h-3.5" />
         </button>
 
-        <div class="w-px h-4 bg-slate-300 dark:bg-slate-700 mx-0.5"></div>
+        <div class="w-px h-4 bg-slate-300/60 dark:bg-slate-700/60 mx-0.5"></div>
 
         <button
           @click="toggleDark()"
-          class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition"
+          class="liquid-glass-btn p-1.5 rounded-xl text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
           title="Ganti Tema Gelap / Terang"
         >
-          <Moon v-if="!isDark" class="w-4 h-4" />
-          <Sun v-else class="w-4 h-4 text-amber-400" />
+          <Moon v-if="!isDark" class="w-3.5 h-3.5" />
+          <Sun v-else class="w-3.5 h-3.5 text-amber-400" />
         </button>
       </div>
     </div>
 
-    <!-- macOS Segmented Control (Tabs) -->
-    <div class="p-3 border-b border-slate-200/60 dark:border-white/10 bg-slate-50/40 dark:bg-white/[0.01]">
-      <div class="p-1 bg-slate-200/50 dark:bg-white/5 backdrop-blur-xl rounded-xl flex gap-1 border border-black/5 dark:border-white/5">
+    <!-- macOS Liquid Segmented Control (Tabs) -->
+    <div class="p-3 border-b border-white/40 dark:border-white/10 bg-white/10 dark:bg-white/[0.01]">
+      <div class="p-1 liquid-glass-capsule rounded-2xl flex gap-1">
         <button
           @click="activeTab = 'text'"
           :class="[
-            'flex-1 py-1.5 px-3 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1.5',
+            'flex-1 py-1.5 px-3 rounded-xl text-xs font-medium transition flex items-center justify-center gap-1.5',
             activeTab === 'text'
-              ? 'bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm font-semibold'
+              ? 'bg-white/95 dark:bg-white/20 text-slate-900 dark:text-white shadow-sm font-semibold border border-white/80 dark:border-white/30'
               : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           ]"
         >
@@ -88,9 +89,9 @@ const toggleDark = useToggle(isDark);
         <button
           @click="activeTab = 'design'"
           :class="[
-            'flex-1 py-1.5 px-3 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1.5',
+            'flex-1 py-1.5 px-3 rounded-xl text-xs font-medium transition flex items-center justify-center gap-1.5',
             activeTab === 'design'
-              ? 'bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm font-semibold'
+              ? 'bg-white/95 dark:bg-white/20 text-slate-900 dark:text-white shadow-sm font-semibold border border-white/80 dark:border-white/30'
               : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
           ]"
         >
