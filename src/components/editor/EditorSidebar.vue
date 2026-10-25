@@ -3,16 +3,10 @@ import { ref } from 'vue';
 import { useDark, useToggle } from '@vueuse/core';
 import { useDocumentStore } from '@/stores/documentStore';
 import TextInputTab from './TextInputTab.vue';
-import TypographyTab from './TypographyTab.vue';
-import HumanizerTab from './HumanizerTab.vue';
-import PaperTab from './PaperTab.vue';
-import RealismTab from './RealismTab.vue';
+import DesignTab from './DesignTab.vue';
 import {
   FileText,
-  Type,
-  Scroll,
-  Sparkles,
-  Camera,
+  Palette,
   Sun,
   Moon,
   PenTool,
@@ -22,7 +16,7 @@ import {
   ExternalLink,
 } from 'lucide-vue-next';
 
-type TabKey = 'text' | 'typography' | 'paper' | 'humanizer' | 'realism';
+type TabKey = 'text' | 'design';
 
 const activeTab = ref<TabKey>('text');
 const documentStore = useDocumentStore();
@@ -31,11 +25,8 @@ const isDark = useDark();
 const toggleDark = useToggle(isDark);
 
 const TABS = [
-  { key: 'text', label: 'Teks', icon: FileText },
-  { key: 'typography', label: 'Font & Tinta', icon: Type },
-  { key: 'paper', label: 'Kertas', icon: Scroll },
-  { key: 'humanizer', label: 'Humanizer', icon: Sparkles },
-  { key: 'realism', label: 'Kamera FX', icon: Camera },
+  { key: 'text', label: '1. Teks & Catatan', icon: FileText },
+  { key: 'design', label: '2. Kertas & Gaya', icon: Palette },
 ];
 </script>
 
@@ -111,20 +102,20 @@ const TABS = [
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="flex border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 px-2 pt-2 gap-1 overflow-x-auto scrollbar-none">
+    <!-- Navigation Tabs (2 Clean Tabs) -->
+    <div class="grid grid-cols-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 p-1.5 gap-1.5">
       <button
         v-for="tab in TABS"
         :key="tab.key"
         @click="activeTab = tab.key as TabKey"
         :class="[
-          'flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-t-lg transition border-b-2 whitespace-nowrap',
+          'flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-lg transition shadow-sm',
           activeTab === tab.key
-            ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-950 shadow-sm'
-            : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 hover:bg-white/50 dark:hover:bg-slate-800/50',
+            ? 'bg-indigo-600 text-white shadow-indigo-600/20'
+            : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-200/60 dark:border-slate-800',
         ]"
       >
-        <component :is="tab.icon" class="w-3.5 h-3.5" />
+        <component :is="tab.icon" class="w-4 h-4" />
         <span>{{ tab.label }}</span>
       </button>
     </div>
@@ -132,10 +123,7 @@ const TABS = [
     <!-- Tab Content Scrollable Area -->
     <div class="flex-1 overflow-y-auto">
       <TextInputTab v-show="activeTab === 'text'" />
-      <TypographyTab v-show="activeTab === 'typography'" />
-      <PaperTab v-show="activeTab === 'paper'" />
-      <HumanizerTab v-show="activeTab === 'humanizer'" />
-      <RealismTab v-show="activeTab === 'realism'" />
+      <DesignTab v-show="activeTab === 'design'" />
     </div>
   </aside>
 </template>

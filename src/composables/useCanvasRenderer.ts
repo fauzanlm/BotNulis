@@ -38,7 +38,100 @@ export function useCanvasRenderer() {
   ) {
     ctx.save();
 
-    if (paper.id === 'binder-loose-leaf-20') {
+    if (paper.id === 'folio-bergaris-31') {
+      // 1. Double Folio Bergaris (SiDU HD 31 Baris - 100% Vector Sharp)
+      ctx.fillStyle = '#faf7ef';
+      ctx.fillRect(0, 0, width, height);
+
+      // Fine paper grain
+      ctx.fillStyle = 'rgba(120, 90, 50, 0.015)';
+      for (let i = 0; i < 500; i++) {
+        const rx = Math.random() * width;
+        const ry = Math.random() * height;
+        ctx.fillRect(rx, ry, Math.random() * 3, Math.random() * 3);
+      }
+
+      // Top printed header: No. and Date
+      ctx.fillStyle = 'rgba(80, 95, 115, 0.65)';
+      ctx.font = '600 36px "Courier New", monospace, sans-serif';
+      ctx.fillText('No.  : .........................', width - 820, 310);
+      ctx.fillText('Date : .........................', width - 820, 375);
+
+      // Double top red/magenta header lines
+      ctx.strokeStyle = 'rgba(215, 65, 65, 0.75)';
+      ctx.lineWidth = 2.0;
+      ctx.beginPath();
+      ctx.moveTo(80, 420);
+      ctx.lineTo(width - 80, 420);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(80, 428);
+      ctx.lineTo(width - 80, 428);
+      ctx.stroke();
+
+      // Left vertical red margin rule
+      ctx.strokeStyle = 'rgba(225, 65, 65, 0.85)';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(paper.marginLeft - 25, 100);
+      ctx.lineTo(paper.marginLeft - 25, height - 100);
+      ctx.stroke();
+
+      // 31 Ruling Lines
+      ctx.strokeStyle = 'rgba(88, 135, 195, 0.65)';
+      ctx.lineWidth = 1.6;
+      for (let y = paper.marginTop; y <= paper.marginBottom; y += paper.lineHeight) {
+        ctx.beginPath();
+        ctx.moveTo(paper.marginLeft - 25, y);
+        ctx.lineTo(width - 120, y);
+        ctx.stroke();
+      }
+
+      // Double bottom blue line
+      ctx.beginPath();
+      ctx.moveTo(paper.marginLeft - 25, paper.marginBottom + 6);
+      ctx.lineTo(width - 120, paper.marginBottom + 6);
+      ctx.stroke();
+
+    } else if (paper.id === 'buku-sidu-25') {
+      // 2. Buku Tulis Sekolah Sinar Dunia HD 25 Baris
+      ctx.fillStyle = '#faf8f2';
+      ctx.fillRect(0, 0, width, height);
+
+      // Fine paper grain
+      ctx.fillStyle = 'rgba(120, 90, 50, 0.015)';
+      for (let i = 0; i < 500; i++) {
+        const rx = Math.random() * width;
+        const ry = Math.random() * height;
+        ctx.fillRect(rx, ry, Math.random() * 3, Math.random() * 3);
+      }
+
+      // Top printed header: No. and Tanggal
+      ctx.fillStyle = 'rgba(80, 95, 115, 0.65)';
+      ctx.font = '600 36px "Courier New", monospace, sans-serif';
+      ctx.fillText('No.     : ......................', width - 820, 320);
+      ctx.fillText('Tanggal : ......................', width - 820, 390);
+
+      // Left vertical red margin rule
+      ctx.strokeStyle = 'rgba(225, 65, 65, 0.85)';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(paper.marginLeft - 25, 100);
+      ctx.lineTo(paper.marginLeft - 25, height - 100);
+      ctx.stroke();
+
+      // 25 Ruling Lines
+      ctx.strokeStyle = 'rgba(88, 135, 195, 0.65)';
+      ctx.lineWidth = 1.6;
+      for (let y = paper.marginTop; y <= paper.marginBottom; y += paper.lineHeight) {
+        ctx.beginPath();
+        ctx.moveTo(paper.marginLeft - 25, y);
+        ctx.lineTo(width - 120, y);
+        ctx.stroke();
+      }
+
+    } else if (paper.id === 'binder-loose-leaf-20') {
       // 1. Off-white binder sheet
       ctx.fillStyle = '#fcfbf7';
       ctx.fillRect(0, 0, width, height);

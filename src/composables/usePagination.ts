@@ -28,7 +28,8 @@ export function usePagination() {
     // Set measure font
     measureCtx.font = `${typography.fontSize}px "${typography.fontFamily}", cursive, sans-serif`;
 
-    const effectiveLineHeight = paper.lineHeight * (typography.lineHeightScale || 1);
+    // Lock line height strictly to physical paper lines so text never floats or drifts
+    const effectiveLineHeight = paper.lineHeight;
 
     function startNewPage() {
       // Push any remaining words on current line
@@ -66,10 +67,11 @@ export function usePagination() {
 
       currentLineWords = [];
       currentLineIndex++;
-      currentY += effectiveLineHeight;
+      currentY = paper.marginTop + currentLineIndex * effectiveLineHeight;
 
-      // Check page boundary overflow
-      if (currentY > paper.marginBottom) {
+      // Check page boundary overflow (by pixel margin or total lines count)
+      const isPastTotalLines = paper.totalLines ? currentLineIndex >= paper.totalLines : false;
+      if (currentY > paper.marginBottom || isPastTotalLines) {
         startNewPage();
       } else {
         currentLineMarginLeft = paper.marginLeft + getLineMarginDrift(currentLineIndex, humanizer);

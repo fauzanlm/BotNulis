@@ -25,12 +25,12 @@ export function useHumanizer() {
     const seed = (pageIndex * 100000) + (lineIndex * 1000) + (wordIndex * 17) + 12345;
     const prng = createPRNG(seed);
 
-    // Baseline jitter: proportional to font size (up to ±30% of font size at 100% slider)
-    const maxJitter = (fontSize * 0.3) * config.baselineJitter;
+    // Baseline micro-jitter: subtle micro-variation (up to ±1.8px max so text stays strictly sitting on the notebook line)
+    const maxJitter = Math.min(1.8, fontSize * 0.035) * config.baselineJitter;
     const jitterY = (prng() - 0.5) * 2 * maxJitter;
 
-    // Sub-degree to degree rotation (up to ±4.5deg in radians at 100% slider)
-    const maxRotation = (9.0 * Math.PI / 180) * config.rotationJitter;
+    // Sub-degree rotation (gentle organic tilt up to ±1.2deg in radians)
+    const maxRotation = (2.4 * Math.PI / 180) * config.rotationJitter;
     const rotation = (prng() - 0.5) * 2 * maxRotation;
 
     // Spacing factor (ranges from 0.55x to 1.45x at 100% slider)
