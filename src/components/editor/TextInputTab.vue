@@ -160,50 +160,49 @@ const wordCount = computed(() => {
 
 <template>
   <div class="space-y-4 p-4">
-    <!-- Header Section (Accordion / Card) -->
-    <div class="bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+    <!-- Header Section (macOS Frosted Glass Card) -->
+    <div class="backdrop-blur-xl bg-white/60 dark:bg-white/[0.03] p-3.5 rounded-2xl border border-slate-200/70 dark:border-white/10 space-y-2.5 shadow-sm">
       <div class="flex items-center justify-between">
-        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          Header Kertas (Nama & Tanggal)
+        <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          Header Kertas
         </h3>
-        <!-- Auto-fill header button -->
         <button
           @click="extractHeaderFromText"
-          class="inline-flex items-center gap-1 text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
-          title="Ekstrak Nama, NIM, Kelas dari teks otomatis"
+          class="inline-flex items-center gap-1 text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-medium"
+          title="Ekstrak Nama, NIM dari teks otomatis"
         >
           <Wand2 class="w-3 h-3" />
           <span>Isi dari Teks</span>
         </button>
       </div>
 
-      <div class="grid grid-cols-2 gap-2.5">
+      <div class="grid grid-cols-2 gap-2">
         <div>
-          <label class="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">Nama / Info</label>
+          <label class="block text-[10px] font-medium text-slate-500 dark:text-slate-400 mb-1">Nama / NIM</label>
           <input
             v-model="documentStore.header.name"
             type="text"
             placeholder="Nama Lengkap & NIM..."
-            class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none"
+            class="w-full text-xs px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-white/[0.05] text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
           />
         </div>
 
         <div>
-          <label class="block text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-1">Tanggal</label>
+          <label class="block text-[10px] font-medium text-slate-500 dark:text-slate-400 mb-1">Tanggal</label>
           <input
             v-model="documentStore.header.date"
             type="text"
             placeholder="DD/MM/YYYY"
-            class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none"
+            class="w-full text-xs px-2.5 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-white/[0.05] text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
           />
         </div>
       </div>
     </div>
 
-    <!-- Quick Formatting & History Bar -->
+    <!-- Main Text Section -->
     <div class="space-y-2">
       <div class="flex items-center justify-between">
-        <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+        <label class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Isi Tulisan Tangan
         </label>
 
@@ -211,16 +210,16 @@ const wordCount = computed(() => {
         <div class="flex items-center gap-1.5">
           <button
             @click="insertAssignmentTemplate"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold rounded-lg bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 hover:bg-indigo-100 transition"
+            class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100/70 transition"
             title="Tempel contoh format tugas mahasiswa/pelajar"
           >
             <FileCheck class="w-3.5 h-3.5" />
-            <span>Contoh Format</span>
+            <span>Format Tugas</span>
           </button>
 
           <button
             @click="documentStore.resetToSample"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 transition"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-xl text-slate-400 hover:text-rose-500 transition"
             title="Reset teks ke awal"
           >
             <RotateCcw class="w-3 h-3" />
@@ -229,13 +228,12 @@ const wordCount = computed(() => {
         </div>
       </div>
 
-      <!-- Quick Syntax & Clean Text Toolbar -->
-      <div class="flex flex-wrap items-center justify-between gap-1.5 pb-1">
-        <!-- Syntax Buttons -->
-        <div class="flex flex-wrap items-center gap-1.5">
+      <!-- Quick Formatting Glass Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-1.5">
+        <div class="flex flex-wrap items-center gap-1">
           <button
             @click="insertTag('~~', '~~')"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white text-slate-700 dark:text-slate-300 transition"
             title="Coretan kata pulpen alami"
           >
             <Strikethrough class="w-3 h-3 text-rose-500" />
@@ -244,25 +242,25 @@ const wordCount = computed(() => {
 
           <button
             @click="insertTag('[merah]', '[/merah]')"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/30 hover:bg-red-100/50 text-red-700 dark:text-red-300 transition"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-red-200/80 dark:border-red-900/40 bg-red-50/50 dark:bg-red-950/20 text-red-600 dark:text-red-300 transition"
             title="Tinta Pulpen Merah"
           >
-            <Palette class="w-3 h-3 text-red-600" />
+            <Palette class="w-3 h-3 text-red-500" />
             <span>[merah]</span>
           </button>
 
           <button
             @click="insertTag('[biru]', '[/biru]')"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-950/30 hover:bg-blue-100/50 text-blue-700 dark:text-blue-300 transition"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-blue-200/80 dark:border-blue-900/40 bg-blue-50/50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-300 transition"
             title="Tinta Pulpen Biru"
           >
-            <Palette class="w-3 h-3 text-blue-600" />
+            <Palette class="w-3 h-3 text-blue-500" />
             <span>[biru]</span>
           </button>
 
           <button
             @click="insertTag('==', '==')"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/30 hover:bg-amber-100/50 text-amber-700 dark:text-amber-300 transition"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-amber-200/80 dark:border-amber-900/40 bg-amber-50/50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-300 transition"
             title="Stabilo Kuning"
           >
             <Highlighter class="w-3 h-3 text-amber-500" />
@@ -271,55 +269,55 @@ const wordCount = computed(() => {
 
           <button
             @click="insertTabIndent"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white text-slate-700 dark:text-slate-300 transition"
             title="Indent Paragraf (4 spasi)"
           >
-            <Indent class="w-3 h-3 text-indigo-500" />
+            <Indent class="w-3 h-3 text-blue-500" />
             <span>Indent</span>
           </button>
         </div>
 
-        <!-- Clean Text / Remove Enters Buttons -->
+        <!-- Clean Text Buttons -->
         <div class="flex items-center gap-1">
           <button
             @click="removeAllEmptyLines"
-            class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-md border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/70 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 transition shadow-sm"
+            class="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 hover:bg-blue-600/20 transition"
             title="Hapus SEMUA baris kosong agar tulisan rapat di kertas buku"
           >
-            <Eraser class="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
-            <span>Hapus Enter Kosong</span>
+            <Eraser class="w-3 h-3" />
+            <span>Hapus Enter</span>
           </button>
 
           <button
             @click="compactEmptyLines"
-            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition"
-            title="Rapikan enter kosong berlebih menjadi maksimal 1 baris antar paragraf"
+            class="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded-lg border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.05] hover:bg-white text-slate-600 dark:text-slate-300 transition"
+            title="Maksimal 1 baris kosong antar paragraf"
           >
-            <WrapText class="w-3 h-3 text-slate-500" />
-            <span>Maks 1 Enter</span>
+            <WrapText class="w-3 h-3 opacity-60" />
+            <span>Maks 1</span>
           </button>
         </div>
       </div>
 
-      <!-- Main Textarea -->
+      <!-- Main Textarea (macOS Glass Box) -->
       <textarea
         ref="textareaRef"
         v-model="documentStore.text"
-        rows="16"
-        placeholder="Ketik atau tempel teks tugasmu di sini..."
-        class="w-full text-xs font-mono leading-relaxed p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none resize-none shadow-sm transition"
+        rows="17"
+        placeholder="Ketik atau tempel teks tugas di sini..."
+        class="w-full text-xs font-mono leading-relaxed p-3.5 rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-white/[0.04] text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none resize-none shadow-sm transition backdrop-blur-sm"
         @keydown="handleKeydown"
       ></textarea>
 
       <!-- Stats Bar with Estimated Pages -->
       <div class="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-0.5">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
           <span>{{ documentStore.text.length }} karakter</span>
           <span>•</span>
           <span>{{ wordCount }} kata</span>
         </div>
-        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium text-[10px]">
-          Total Halaman: {{ documentStore.totalPages }}
+        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] text-slate-600 dark:text-slate-300 font-medium text-[10px]">
+          Total: {{ documentStore.totalPages }} Halaman
         </span>
       </div>
     </div>

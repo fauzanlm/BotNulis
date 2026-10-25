@@ -9,11 +9,8 @@ import {
   Palette,
   Sun,
   Moon,
-  PenTool,
   Undo2,
   Redo2,
-  Github,
-  ExternalLink,
 } from 'lucide-vue-next';
 
 type TabKey = 'text' | 'design';
@@ -23,48 +20,28 @@ const documentStore = useDocumentStore();
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
-
-const TABS = [
-  { key: 'text', label: '1. Teks & Catatan', icon: FileText },
-  { key: 'design', label: '2. Kertas & Gaya', icon: Palette },
-];
 </script>
 
 <template>
-  <aside class="w-full md:w-[420px] lg:w-[460px] h-full flex flex-col bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 z-20 flex-shrink-0 shadow-lg md:shadow-none">
-    <!-- Top Brand & Header -->
-    <div class="h-16 border-b border-slate-200 dark:border-slate-800 px-4 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/40">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/25">
-          <PenTool class="w-4 h-4" />
-        </div>
-        <div>
-          <div class="flex items-center gap-1.5">
-            <h1 class="text-sm font-bold text-slate-900 dark:text-white leading-tight">BotNulis Studio</h1>
-            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/80">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Live
-            </span>
-          </div>
-          <a
-            href="https://botnulis.fauzanlm.my.id"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1 text-[10px] font-mono text-indigo-600 dark:text-indigo-400 hover:underline"
-            title="Buka subdomain resmi"
-          >
-            <span>botnulis.fauzanlm.my.id</span>
-            <ExternalLink class="w-2.5 h-2.5 opacity-60" />
-          </a>
-        </div>
+  <aside class="w-full md:w-[400px] lg:w-[440px] h-full flex flex-col backdrop-blur-2xl bg-white/75 dark:bg-slate-900/75 border-r border-slate-200/70 dark:border-white/10 z-20 flex-shrink-0 transition-colors">
+    <!-- macOS Window Chrome & Titlebar -->
+    <div class="h-14 border-b border-slate-200/60 dark:border-white/10 px-4 flex items-center justify-between bg-white/40 dark:bg-white/[0.02]">
+      <!-- macOS Traffic Light Window Controls -->
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e]/40 shadow-sm inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dea123]/40 shadow-sm inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29]/40 shadow-sm inline-block"></span>
+        <span class="ml-2 text-xs font-semibold tracking-tight text-slate-800 dark:text-slate-200">
+          BotNulis
+        </span>
       </div>
 
+      <!-- Quick Actions (Undo, Redo, Theme) -->
       <div class="flex items-center gap-1">
-        <!-- Quick Undo/Redo -->
         <button
           @click="documentStore.undo"
           :disabled="!documentStore.canUndo"
-          class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition"
+          class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
           title="Undo (Ctrl+Z / Cmd+Z)"
         >
           <Undo2 class="w-4 h-4" />
@@ -73,27 +50,17 @@ const TABS = [
         <button
           @click="documentStore.redo"
           :disabled="!documentStore.canRedo"
-          class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 disabled:opacity-30 disabled:cursor-not-allowed transition"
+          class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
           title="Redo (Ctrl+Y / Cmd+Shift+Z)"
         >
           <Redo2 class="w-4 h-4" />
         </button>
 
-        <!-- GitHub Repo Link -->
-        <a
-          href="https://github.com/fauzanlm/BotNulis"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition"
-          title="GitHub Repository"
-        >
-          <Github class="w-4 h-4" />
-        </a>
+        <div class="w-px h-4 bg-slate-300 dark:bg-slate-700 mx-0.5"></div>
 
-        <!-- Dark Mode Toggle -->
         <button
           @click="toggleDark()"
-          class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-900 transition"
+          class="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition"
           title="Ganti Tema Gelap / Terang"
         >
           <Moon v-if="!isDark" class="w-4 h-4" />
@@ -102,22 +69,35 @@ const TABS = [
       </div>
     </div>
 
-    <!-- Navigation Tabs (2 Clean Tabs) -->
-    <div class="grid grid-cols-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 p-1.5 gap-1.5">
-      <button
-        v-for="tab in TABS"
-        :key="tab.key"
-        @click="activeTab = tab.key as TabKey"
-        :class="[
-          'flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold rounded-lg transition shadow-sm',
-          activeTab === tab.key
-            ? 'bg-indigo-600 text-white shadow-indigo-600/20'
-            : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-200/60 dark:border-slate-800',
-        ]"
-      >
-        <component :is="tab.icon" class="w-4 h-4" />
-        <span>{{ tab.label }}</span>
-      </button>
+    <!-- macOS Segmented Control (Tabs) -->
+    <div class="p-3 border-b border-slate-200/60 dark:border-white/10 bg-slate-50/40 dark:bg-white/[0.01]">
+      <div class="p-1 bg-slate-200/50 dark:bg-white/5 backdrop-blur-xl rounded-xl flex gap-1 border border-black/5 dark:border-white/5">
+        <button
+          @click="activeTab = 'text'"
+          :class="[
+            'flex-1 py-1.5 px-3 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1.5',
+            activeTab === 'text'
+              ? 'bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm font-semibold'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+          ]"
+        >
+          <FileText class="w-3.5 h-3.5" />
+          <span>Teks & Catatan</span>
+        </button>
+
+        <button
+          @click="activeTab = 'design'"
+          :class="[
+            'flex-1 py-1.5 px-3 rounded-lg text-xs font-medium transition flex items-center justify-center gap-1.5',
+            activeTab === 'design'
+              ? 'bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm font-semibold'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+          ]"
+        >
+          <Palette class="w-3.5 h-3.5" />
+          <span>Kertas & Gaya</span>
+        </button>
+      </div>
     </div>
 
     <!-- Tab Content Scrollable Area -->
