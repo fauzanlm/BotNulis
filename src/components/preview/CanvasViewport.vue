@@ -55,11 +55,6 @@ onMounted(() => {
   measureCtx = measureCanvas.getContext('2d');
   calculateLayout();
 
-  // Auto-fit to screen on load
-  setTimeout(() => {
-    fitToScreen();
-  }, 200);
-
   window.addEventListener('click', handleGlobalClick);
 });
 
@@ -125,14 +120,10 @@ function fitToScreen() {
     zoom.value = 100;
     return;
   }
-  const containerHeight = viewportContainerRef.value.clientHeight - 100;
-  const paperHeight = paperStore.currentPaper.height * 0.5; // Base display scale is roughly 50%
-  if (paperHeight > 0) {
-    const calculated = Math.round((containerHeight / paperHeight) * 90);
-    zoom.value = Math.min(115, Math.max(45, calculated));
-  } else {
-    zoom.value = 100;
-  }
+  const availableHeight = viewportContainerRef.value.clientHeight - 80;
+  // Base display height is 800px at 100% zoom
+  const calculated = Math.round((availableHeight / 800) * 100);
+  zoom.value = Math.min(160, Math.max(40, calculated));
 }
 
 async function handleCopy() {
@@ -340,19 +331,15 @@ function handleDownloadZip() {
     <!-- Main Canvas Viewport Area -->
     <main
       ref="viewportContainerRef"
-      class="flex-1 overflow-auto flex items-center justify-center p-4 md:p-8 relative"
+      class="flex-1 overflow-auto p-4 md:p-8 flex relative"
     >
-      <div
-        class="transition-transform duration-150 origin-center flex items-center justify-center"
-        :style="{ transform: `scale(${zoom / 100})` }"
-      >
-        <div class="shadow-[0_20px_60px_-15px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.65)] rounded-sm overflow-hidden transition-shadow">
-          <PageCanvas
-            ref="activeCanvasRef"
-            :page="currentPage"
-            @ready="handleCanvasReady"
-          />
-        </div>
+      <div class="m-auto py-6 flex flex-col items-center justify-center">
+        <PageCanvas
+          ref="activeCanvasRef"
+          :page="currentPage"
+          :zoom="zoom"
+          @ready="handleCanvasReady"
+        />
       </div>
 
       <!-- Toast Notification Alert (Liquid Glass Capsule) -->

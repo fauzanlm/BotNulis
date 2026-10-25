@@ -8,9 +8,15 @@ import { useCanvasRenderer } from '@/composables/useCanvasRenderer';
 import { useFontLoader } from '@/composables/useFontLoader';
 import { FONT_PRESETS } from '@/utils/fontPresets';
 
-const props = defineProps<{
-  page: PageLayout;
-}>();
+const props = withDefaults(
+  defineProps<{
+    page: PageLayout;
+    zoom?: number;
+  }>(),
+  {
+    zoom: 100,
+  }
+);
 
 const emit = defineEmits<{
   (e: 'ready', canvas: HTMLCanvasElement): void;
@@ -24,6 +30,20 @@ const { renderPage } = useCanvasRenderer();
 const { loadFont } = useFontLoader();
 
 const isRendering = ref(false);
+
+const BASE_DISPLAY_HEIGHT = 800; // Base height in px for 100% zoom
+
+const canvasDisplayDimensions = computed(() => {
+  const currentZoom = props.zoom ?? 100;
+  const paper = paperStore.currentPaper;
+  const aspectRatio = paper ? paper.width / paper.height : 0.707;
+  const h = Math.round(BASE_DISPLAY_HEIGHT * (currentZoom / 100));
+  const w = Math.round(h * aspectRatio);
+  return {
+    width: `${w}px`,
+    height: `${h}px`,
+  };
+});
 
 // 3D Perspective Tilt Transform for interactive preview
 const tiltStyle = computed(() => {
@@ -95,16 +115,13 @@ defineExpose({
 </script>
 
 <template>
-  <div class="relative flex items-center justify-center p-4 transition-transform duration-200" :style="tiltStyle">
-    <!-- Paper Canvas Element -->
-    <div class="relative shadow-2xl rounded-sm overflow-hidden bg-white ring-1 ring-black/10">
+  <div class="relative flex items-center justify-center transition-transform duration-200" :style="tiltStyle">
+    <!-- Paper Canvas Element with crisp shadow and border -->
+    <div class="relative shadow-[0_20px_60px_-15px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.65)] rounded-sm overflow-hidden bg-white ring-1 ring-black/10">
       <canvas
         ref="canvasRef"
-        class="block max-w-full h-auto object-contain select-none"
-        :style="{
-          maxHeight: 'calc(100vh - 160px)',
-          width: 'auto',
-        }"
+        class="block select-none transition-all duration-150"
+        :style="canvasDisplayDimensions"
       ></canvas>
 
       <!-- Loading overlay -->
