@@ -20,6 +20,7 @@ import {
   Check,
   FileImage,
   ChevronDown,
+  ScanLine,
 } from 'lucide-vue-next';
 
 const documentStore = useDocumentStore();
@@ -223,7 +224,7 @@ function handleDownloadZip() {
         <span>{{ paperStore.currentPaper?.name }}</span>
       </div>
 
-      <!-- Right Controls: Zoom, Copy & Export -->
+      <!-- Right Controls: Zoom, Scan, Copy & Export -->
       <div class="flex items-center gap-2">
         <!-- Zoom Controls Liquid Capsule -->
         <div class="hidden sm:flex items-center gap-1 liquid-glass-capsule p-1 rounded-2xl text-xs">
@@ -250,6 +251,16 @@ function handleDownloadZip() {
             <Maximize2 class="w-3.5 h-3.5" />
           </button>
         </div>
+
+        <!-- Scan Document Button -->
+        <button
+          @click="documentStore.openScanner()"
+          class="liquid-glass-btn inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-2xl text-slate-700 dark:text-slate-200"
+          title="Scan dokumen dari kamera atau upload foto"
+        >
+          <ScanLine class="w-3.5 h-3.5 text-blue-500" />
+          <span class="hidden sm:inline">Scan</span>
+        </button>
 
         <!-- Copy Image Liquid Glass Button -->
         <button

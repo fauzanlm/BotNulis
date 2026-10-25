@@ -66,11 +66,22 @@ export const useDocumentStore = defineStore(
       }
     }
 
+    const isScannerOpen = ref(false);
+
+    function openScanner() {
+      isScannerOpen.value = true;
+    }
+
+    function closeScanner() {
+      isScannerOpen.value = false;
+    }
+
     return {
       text,
       currentPageIndex,
       totalPages,
       header,
+      isScannerOpen,
       canUndo,
       canRedo,
       undo,
@@ -78,6 +89,8 @@ export const useDocumentStore = defineStore(
       commit,
       setPage,
       resetToSample,
+      openScanner,
+      closeScanner,
     };
   },
   {

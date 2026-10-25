@@ -11,6 +11,7 @@ import {
   Moon,
   Undo2,
   Redo2,
+  ScanLine,
 } from 'lucide-vue-next';
 
 type TabKey = 'text' | 'design';
@@ -37,8 +38,18 @@ const toggleDark = useToggle(isDark);
         </span>
       </div>
 
-      <!-- Quick Actions (Undo, Redo, Theme) -->
+      <!-- Quick Actions (Scan, Undo, Redo, Theme) -->
       <div class="flex items-center gap-1.5">
+        <button
+          @click="documentStore.openScanner()"
+          class="liquid-glass-btn p-1.5 rounded-xl text-blue-600 dark:text-blue-400 hover:text-blue-700"
+          title="Scan Dokumen (Kamera & Upload)"
+        >
+          <ScanLine class="w-3.5 h-3.5" />
+        </button>
+
+        <div class="w-px h-4 bg-slate-300/60 dark:bg-slate-700/60 mx-0.5"></div>
+
         <button
           @click="documentStore.undo"
           :disabled="!documentStore.canUndo"

@@ -2,16 +2,19 @@
 import { ref, computed } from 'vue';
 import { usePaperStore } from '@/stores/paperStore';
 import { useStyleStore } from '@/stores/styleStore';
+import { useDocumentStore } from '@/stores/documentStore';
 import { useFontLoader } from '@/composables/useFontLoader';
 import { FONT_PRESETS, type FontItem } from '@/utils/fontPresets';
 import {
   Check,
   Upload,
   Camera,
+  ScanLine,
 } from 'lucide-vue-next';
 
 const paperStore = usePaperStore();
 const styleStore = useStyleStore();
+const documentStore = useDocumentStore();
 const { loadCustomFontFile, isLoading } = useFontLoader();
 
 const fileInputRef = ref<HTMLInputElement | null>(null);
@@ -66,12 +69,22 @@ function resetBaseline() {
         <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Template Kertas (HD Crisp)
         </label>
-        <button
-          @click="showScanPhotos = !showScanPhotos"
-          class="liquid-glass-btn px-2 py-0.5 rounded-lg text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
-        >
-          {{ showScanPhotos ? 'Sembunyikan Foto' : '+ Opsi Foto Scan' }}
-        </button>
+        <div class="flex items-center gap-1.5">
+          <button
+            @click="documentStore.openScanner()"
+            class="liquid-glass-btn px-2 py-0.5 rounded-lg text-[10px] font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1"
+            title="Scan kertas fisik langsung dengan kamera atau upload foto"
+          >
+            <ScanLine class="w-3 h-3" />
+            <span>+ Scan Kertas</span>
+          </button>
+          <button
+            @click="showScanPhotos = !showScanPhotos"
+            class="liquid-glass-btn px-2 py-0.5 rounded-lg text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
+          >
+            {{ showScanPhotos ? 'Sembunyikan' : 'Foto' }}
+          </button>
+        </div>
       </div>
 
       <!-- Paper Grid -->

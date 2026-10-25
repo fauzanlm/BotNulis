@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import EditorSidebar from '@/components/editor/EditorSidebar.vue';
 import CanvasViewport from '@/components/preview/CanvasViewport.vue';
+import DocumentScannerModal from '@/components/scanner/DocumentScannerModal.vue';
+import { useDocumentStore } from '@/stores/documentStore';
+
+const documentStore = useDocumentStore();
 </script>
 
 <template>
@@ -18,5 +22,11 @@ import CanvasViewport from '@/components/preview/CanvasViewport.vue';
 
     <!-- Right / Main Area: Live Interactive Canvas Viewport -->
     <CanvasViewport />
+
+    <!-- Document Scanner Studio Modal (Camera / Upload / CamScanner Filter) -->
+    <DocumentScannerModal
+      v-if="documentStore.isScannerOpen"
+      @close="documentStore.closeScanner()"
+    />
   </div>
 </template>
