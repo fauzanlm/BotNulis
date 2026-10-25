@@ -3,6 +3,45 @@ import type { PaperTemplate } from '@/types/paper';
 export const PAPER_PRESETS: PaperTemplate[] = [
   // --- Kertas Utama (HD Crisp, 100% Presisi Garis, Tanpa Blur) ---
   {
+    id: 'folio-sidu-ungu',
+    name: 'Double Folio SiDU Ungu (38 Baris Asli)',
+    category: 'folio',
+    imageUrl: '/assets/papers/folio_sidu_ungu_hd.png',
+    width: 2112,
+    height: 3210,
+    marginTop: 372,
+    marginBottom: 2964,
+    marginLeft: 90,
+    marginRight: 2028,
+    lineHeight: 70,
+    baselineOffset: -6,
+    totalLines: 38,
+    headerFields: {
+      name: { x: 90, y: 150, label: 'Nama / NIM' },
+      date: { x: 1550, y: 150, label: 'Tanggal' },
+      pageNumber: { x: 1850, y: 150, label: 'No' },
+    },
+  },
+  {
+    id: 'folio-sidu-real',
+    name: 'Double Folio SiDU Real (Foto Asli HD 38 Baris)',
+    category: 'folio',
+    imageUrl: '/assets/papers/folio_sidu_real_hd.png',
+    width: 2048,
+    height: 3056,
+    marginTop: 304,
+    marginBottom: 2776,
+    marginLeft: 160,
+    marginRight: 1888,
+    lineHeight: 67,
+    baselineOffset: -6,
+    totalLines: 38,
+    headerFields: {
+      name: { x: 160, y: 140, label: 'Nama / NIM' },
+      date: { x: 1500, y: 140, label: 'Tanggal' },
+    },
+  },
+  {
     id: 'folio-bergaris-31',
     name: 'Double Folio Bergaris (SiDU HD 31 Baris)',
     category: 'folio',
@@ -102,6 +141,25 @@ export const PAPER_PRESETS: PaperTemplate[] = [
   },
 
   // --- Kertas Foto Scan Asli (Opsional) ---
+  {
+    id: 'folio-sidu-meja-foto',
+    name: 'Double Folio SiDU di Meja (Foto Realistis)',
+    category: 'folio',
+    imageUrl: '/assets/papers/folio_sidu_meja_hd.png',
+    width: 2400,
+    height: 2400,
+    marginTop: 282,
+    marginBottom: 2136,
+    marginLeft: 510,
+    marginRight: 1950,
+    lineHeight: 50,
+    baselineOffset: -5,
+    totalLines: 38,
+    headerFields: {
+      name: { x: 510, y: 150, label: 'Nama' },
+      date: { x: 1600, y: 150, label: 'Tanggal' },
+    },
+  },
   {
     id: 'folio-bergaris-foto',
     name: 'Double Folio (Foto Scan Asli)',

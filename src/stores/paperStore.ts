@@ -6,7 +6,7 @@ import { PAPER_PRESETS } from '@/utils/paperPresets';
 export const usePaperStore = defineStore(
   'paper',
   () => {
-    const currentPaperId = ref<string>('folio-bergaris-31');
+    const currentPaperId = ref<string>('folio-sidu-ungu');
     const customPapers = ref<PaperTemplate[]>([]);
 
     const allPapers = computed(() => {
