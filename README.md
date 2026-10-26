@@ -10,12 +10,16 @@
 </p>
 
 <p align="center">
-  <a href="https://bot-nulis.vercel.app"><img src="https://img.shields.io/badge/Live_Demo-bot--nulis.vercel.app-2563EB?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
+  <a href="https://bot-nulis-nu.vercel.app"><img src="https://img.shields.io/badge/Live_Demo-bot--nulis--nu.vercel.app-2563EB?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
   <a href="#tech-stack"><img src="https://img.shields.io/badge/Vue-3.5-4FC08D?style=for-the-badge&logo=vue.js&logoColor=white" alt="Vue 3" /></a>
   <a href="#tech-stack"><img src="https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" /></a>
   <a href="#tech-stack"><img src="https://img.shields.io/badge/Vite-6.1-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" /></a>
   <a href="#tech-stack"><img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-F59E0B.svg?style=for-the-badge" alt="License MIT" /></a>
+</p>
+
+<p align="center">
+  <img src="docs/demo/handwriting-demo.gif" alt="Bot Nulis Studio Interactive Demo" width="800" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
 </p>
 
 ---
@@ -27,7 +31,8 @@
 Traditional bot nulis tools suffer from server latency, severe queuing bottlenecks, rigid mathematical alignment, and artificial visual aesthetics. **Bot Nulis Studio** runs entirely within the user's browser, utilizing a seeded **Mulberry32 PRNG (Pseudo-Random Number Generator)** and native **HTML5 Canvas 2D API** to deliver fluid, natural handwriting with authentic human imperfections.
 
 ### 🚀 Try It Online
-👉 **Live Application:** [https://bot-nulis.vercel.app](https://bot-nulis.vercel.app)
+👉 **Live Application:** [https://bot-nulis-nu.vercel.app](https://bot-nulis-nu.vercel.app)  
+👉 **Full HD Video Demo:** [`docs/demo/handwriting-web.mp4`](docs/demo/handwriting-web.mp4)
 
 ---
 
