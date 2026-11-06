@@ -12,6 +12,7 @@ import {
   Undo2,
   Redo2,
   ScanLine,
+  Table,
 } from 'lucide-vue-next';
 
 type TabKey = 'text' | 'design';
@@ -38,8 +39,16 @@ const toggleDark = useToggle(isDark);
         </span>
       </div>
 
-      <!-- Quick Actions (Scan, Undo, Redo, Theme) -->
+      <!-- Quick Actions (Table, Scan, Undo, Redo, Theme) -->
       <div class="flex items-center gap-1.5">
+        <button
+          @click="documentStore.openTableModal()"
+          class="liquid-glass-btn p-1.5 rounded-xl text-indigo-600 dark:text-indigo-400 hover:text-indigo-700"
+          title="Tabel & 3 Kolom (Import JSON / Buat Tabel)"
+        >
+          <Table class="w-3.5 h-3.5" />
+        </button>
+
         <button
           @click="documentStore.openScanner()"
           class="liquid-glass-btn p-1.5 rounded-xl text-blue-600 dark:text-blue-400 hover:text-blue-700"

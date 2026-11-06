@@ -81,7 +81,8 @@ function calculateLayout() {
     paperStore.currentPaper,
     styleStore.typography,
     styleStore.humanizer,
-    measureCtx
+    measureCtx,
+    styleStore.columns
   );
 
   pages.value = calculatedPages;
@@ -100,6 +101,7 @@ watch(
     () => paperStore.currentPaperId,
     () => ({ ...styleStore.typography }),
     () => ({ ...styleStore.humanizer }),
+    () => ({ ...styleStore.columns }),
   ],
   () => {
     calculateLayout();

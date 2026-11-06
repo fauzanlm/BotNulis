@@ -10,6 +10,8 @@ import {
   Upload,
   Camera,
   ScanLine,
+  Table,
+  Columns3,
 } from 'lucide-vue-next';
 
 const paperStore = usePaperStore();
@@ -285,7 +287,84 @@ function resetBaseline() {
       </div>
     </div>
 
-    <!-- 5. Efek Foto Kamera Asli (Liquid Glass Card) -->
+    <!-- 5. Tata Letak 3 Kolom & Tabel (Liquid Glass Card) -->
+    <div class="liquid-glass-card p-4 rounded-3xl space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-6 h-6 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+            <Columns3 class="w-3.5 h-3.5" />
+          </div>
+          <span class="text-xs font-bold text-slate-800 dark:text-slate-100">
+            Tata Letak 3 Kolom & Tabel
+          </span>
+        </div>
+        <button
+          @click="documentStore.openTableModal()"
+          class="liquid-glass-btn px-2.5 py-1 rounded-xl text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1 border-indigo-400/30"
+          title="Buka Studio Tabel & Import JSON"
+        >
+          <Table class="w-3 h-3" />
+          <span>Buka Studio</span>
+        </button>
+      </div>
+
+      <!-- Presets -->
+      <div class="grid grid-cols-3 gap-1.5 pt-0.5">
+        <button
+          @click="styleStore.setColumnPreset('vocab')"
+          :class="[
+            'p-2 rounded-xl text-center border transition-all text-[10px]',
+            styleStore.columns.preset === 'vocab'
+              ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm'
+              : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-white/50',
+          ]"
+        >
+          <div class="font-bold">Kamus</div>
+          <div class="text-[9px] opacity-75">15:35:50</div>
+        </button>
+
+        <button
+          @click="styleStore.setColumnPreset('equal')"
+          :class="[
+            'p-2 rounded-xl text-center border transition-all text-[10px]',
+            styleStore.columns.preset === 'equal'
+              ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm'
+              : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-white/50',
+          ]"
+        >
+          <div class="font-bold">Seimbang</div>
+          <div class="text-[9px] opacity-75">33:33:34</div>
+        </button>
+
+        <button
+          @click="styleStore.setColumnPreset('comparison')"
+          :class="[
+            'p-2 rounded-xl text-center border transition-all text-[10px]',
+            styleStore.columns.preset === 'comparison'
+              ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm'
+              : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-white/50',
+          ]"
+        >
+          <div class="font-bold">Komparasi</div>
+          <div class="text-[9px] opacity-75">25:37:37</div>
+        </button>
+      </div>
+
+      <!-- Divider Toggle -->
+      <div class="flex items-center justify-between pt-1 text-xs">
+        <span class="text-slate-600 dark:text-slate-400 font-medium">Garis Pemisah Vertikal</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input
+            v-model="styleStore.columns.showDividers"
+            type="checkbox"
+            class="sr-only peer"
+          />
+          <div class="w-8 h-4.5 bg-slate-300/80 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-indigo-600"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- 6. Efek Foto Kamera Asli (Liquid Glass Card) -->
     <div class="liquid-glass-card flex items-center justify-between p-3.5 rounded-2xl">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 border border-blue-500/20">

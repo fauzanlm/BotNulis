@@ -34,3 +34,13 @@ export interface HeaderConfig {
   subject: string;
   pageNumber: string;
 }
+
+export type ColumnPresetKey = 'vocab' | 'equal' | 'comparison' | 'custom';
+
+export interface ColumnConfig {
+  enabled: boolean;
+  preset: ColumnPresetKey;
+  ratios: [number, number, number]; // e.g. [0.15, 0.35, 0.50]
+  showDividers: boolean;            // Draw vertical column divider line
+  gap: number;                      // Gap between columns in px
+}

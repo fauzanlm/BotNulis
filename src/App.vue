@@ -2,6 +2,7 @@
 import EditorSidebar from '@/components/editor/EditorSidebar.vue';
 import CanvasViewport from '@/components/preview/CanvasViewport.vue';
 import DocumentScannerModal from '@/components/scanner/DocumentScannerModal.vue';
+import TableManagerModal from '@/components/modals/TableManagerModal.vue';
 import { useDocumentStore } from '@/stores/documentStore';
 
 const documentStore = useDocumentStore();
@@ -27,6 +28,12 @@ const documentStore = useDocumentStore();
     <DocumentScannerModal
       v-if="documentStore.isScannerOpen"
       @close="documentStore.closeScanner()"
+    />
+
+    <!-- Table & 3-Column Studio Modal (JSON Importer & Table Builder) -->
+    <TableManagerModal
+      v-if="documentStore.isTableModalOpen"
+      @close="documentStore.closeTableModal()"
     />
   </div>
 </template>

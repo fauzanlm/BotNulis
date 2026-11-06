@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useDocumentStore } from '@/stores/documentStore';
+import { parseJsonToTable, convertTableToColumnText } from '@/utils/jsonTableImporter';
 import {
   RotateCcw,
   Strikethrough,
@@ -11,6 +12,8 @@ import {
   Wand2,
   FileCheck,
   Indent,
+  Table,
+  Sparkles,
 } from 'lucide-vue-next';
 
 const documentStore = useDocumentStore();
@@ -50,6 +53,44 @@ function insertTabIndent() {
     textarea.focus();
     textarea.selectionStart = textarea.selectionEnd = start + 4;
   }, 10);
+}
+
+/**
+ * Insert column pipe separator
+ */
+function insertColumnPipe() {
+  if (!textareaRef.value) return;
+  const textarea = textareaRef.value;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const text = documentStore.text;
+
+  documentStore.text = text.substring(0, start) + ' | ' + text.substring(end);
+  documentStore.commit();
+
+  setTimeout(() => {
+    textarea.focus();
+    textarea.selectionStart = textarea.selectionEnd = start + 3;
+  }, 10);
+}
+
+const isJsonInText = computed(() => {
+  const t = documentStore.text.trim();
+  return (
+    (t.startsWith('[') && t.endsWith(']')) ||
+    (t.startsWith('{') && t.endsWith('}')) ||
+    (t.includes('":') && t.includes('{') && t.includes('}'))
+  );
+});
+
+function convertJsonInText() {
+  const result = parseJsonToTable(documentStore.text);
+  if (result.table) {
+    documentStore.text = convertTableToColumnText(result.table);
+    documentStore.commit();
+  } else {
+    documentStore.openTableModal();
+  }
 }
 
 /**
@@ -209,6 +250,15 @@ const wordCount = computed(() => {
         <!-- Template and Reset -->
         <div class="flex items-center gap-1.5">
           <button
+            @click="documentStore.openTableModal()"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-xl text-indigo-600 dark:text-indigo-400 border-indigo-400/30"
+            title="Buka Studio Tabel & Import JSON 3 Kolom"
+          >
+            <Table class="w-3.5 h-3.5" />
+            <span>Tabel & JSON</span>
+          </button>
+
+          <button
             @click="insertAssignmentTemplate"
             class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-xl text-blue-600 dark:text-blue-400"
             title="Tempel contoh format tugas mahasiswa/pelajar"
@@ -275,6 +325,15 @@ const wordCount = computed(() => {
             <Indent class="w-3 h-3 text-blue-500" />
             <span>Indent</span>
           </button>
+
+          <button
+            @click="insertColumnPipe"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-xl text-indigo-600 dark:text-indigo-400 border-indigo-300/40"
+            title="Sisipkan garis pemisah kolom (|)"
+          >
+            <Table class="w-3 h-3 text-indigo-500" />
+            <span>| Kolom</span>
+          </button>
         </div>
 
         <!-- Clean Text Buttons -->
@@ -295,6 +354,31 @@ const wordCount = computed(() => {
           >
             <WrapText class="w-3 h-3 opacity-60" />
             <span>Maks 1</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Smart JSON Detection Floating Pill Banner -->
+      <div
+        v-if="isJsonInText"
+        class="p-2.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-between gap-2 shadow-sm animate-in fade-in"
+      >
+        <div class="flex items-center gap-2 text-xs text-indigo-900 dark:text-indigo-200">
+          <Sparkles class="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+          <span class="font-medium text-[11px]">Format JSON terdeteksi di teks. Ingin jadikan tabel 3 kolom?</span>
+        </div>
+        <div class="flex items-center gap-1 flex-shrink-0">
+          <button
+            @click="convertJsonInText"
+            class="px-2.5 py-1 rounded-xl text-[10px] font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition"
+          >
+            Konversi Sekarang
+          </button>
+          <button
+            @click="documentStore.openTableModal()"
+            class="liquid-glass-btn px-2 py-1 rounded-xl text-[10px] font-semibold text-slate-600 dark:text-slate-300"
+          >
+            Buka Studio
           </button>
         </div>
       </div>

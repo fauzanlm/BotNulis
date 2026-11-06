@@ -67,6 +67,7 @@ export const useDocumentStore = defineStore(
     }
 
     const isScannerOpen = ref(false);
+    const isTableModalOpen = ref(false);
 
     function openScanner() {
       isScannerOpen.value = true;
@@ -76,12 +77,21 @@ export const useDocumentStore = defineStore(
       isScannerOpen.value = false;
     }
 
+    function openTableModal() {
+      isTableModalOpen.value = true;
+    }
+
+    function closeTableModal() {
+      isTableModalOpen.value = false;
+    }
+
     return {
       text,
       currentPageIndex,
       totalPages,
       header,
       isScannerOpen,
+      isTableModalOpen,
       canUndo,
       canRedo,
       undo,
@@ -91,6 +101,8 @@ export const useDocumentStore = defineStore(
       resetToSample,
       openScanner,
       closeScanner,
+      openTableModal,
+      closeTableModal,
     };
   },
   {

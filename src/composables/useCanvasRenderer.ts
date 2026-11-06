@@ -372,6 +372,25 @@ export function useCanvasRenderer() {
     const totalBaselineOffset = (typography.baselineOffset || 0) + (paper.baselineOffset || 0);
 
     for (const line of page.lines) {
+      // 3.0 Draw Column Dividers if present
+      if (line.columnDividers && line.columnDividers.length > 0) {
+        ctx.save();
+        ctx.strokeStyle = isDarkPaper ? 'rgba(255, 255, 255, 0.35)' : 'rgba(90, 115, 145, 0.45)';
+        ctx.lineWidth = 1.2;
+        for (const div of line.columnDividers) {
+          if (div.style === 'dashed') {
+            ctx.setLineDash([4, 4]);
+          } else {
+            ctx.setLineDash([]);
+          }
+          ctx.beginPath();
+          ctx.moveTo(div.x, div.yTop);
+          ctx.lineTo(div.x, div.yBottom);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
       for (const word of line.words) {
         ctx.save();
 

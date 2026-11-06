@@ -25,11 +25,20 @@ export interface RenderWord {
   wordIndex: number;
 }
 
+export interface ColumnDivider {
+  x: number;
+  yTop: number;
+  yBottom: number;
+  style?: 'solid' | 'dashed';
+}
+
 export interface RenderLine {
   lineIndex: number;
   y: number;
   words: RenderWord[];
   marginLeft: number;
+  columnDividers?: ColumnDivider[];
+  isHeader?: boolean;
 }
 
 export interface PageLayout {

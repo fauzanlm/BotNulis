@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { TypographyConfig, HumanizerConfig, RealismConfig } from '@/types/style';
+import type { TypographyConfig, HumanizerConfig, RealismConfig, ColumnConfig, ColumnPresetKey } from '@/types/style';
 
 export type PresetProfileKey =
   | 'sangat_rapi'
@@ -11,6 +11,13 @@ export type PresetProfileKey =
   | 'cakar_ayam'
   | 'kamera_malam'
   | 'scan_bersih';
+
+export const COLUMN_PRESET_RATIOS: Record<ColumnPresetKey, [number, number, number]> = {
+  vocab: [0.15, 0.35, 0.5],
+  equal: [0.333, 0.333, 0.334],
+  comparison: [0.25, 0.375, 0.375],
+  custom: [0.2, 0.4, 0.4],
+};
 
 export const useStyleStore = defineStore(
   'style',
@@ -44,6 +51,37 @@ export const useStyleStore = defineStore(
       vignette: 0.2,
       perspectiveTilt: 0,
     });
+
+    const columns = ref<ColumnConfig>({
+      enabled: true,
+      preset: 'vocab',
+      ratios: [0.15, 0.35, 0.5],
+      showDividers: false,
+      gap: 28,
+    });
+
+    function setColumnPreset(preset: ColumnPresetKey) {
+      columns.value.preset = preset;
+      if (preset in COLUMN_PRESET_RATIOS) {
+        columns.value.ratios = [...COLUMN_PRESET_RATIOS[preset]] as [number, number, number];
+      }
+    }
+
+    function setColumnRatios(ratios: [number, number, number]) {
+      const sum = ratios[0] + ratios[1] + ratios[2];
+      if (sum > 0) {
+        columns.value.ratios = [
+          Number((ratios[0] / sum).toFixed(3)),
+          Number((ratios[1] / sum).toFixed(3)),
+          Number((ratios[2] / sum).toFixed(3)),
+        ];
+      }
+      columns.value.preset = 'custom';
+    }
+
+    function toggleColumnDividers() {
+      columns.value.showDividers = !columns.value.showDividers;
+    }
 
     // Preset Profiles
     function applyPreset(name: PresetProfileKey) {
@@ -137,6 +175,10 @@ export const useStyleStore = defineStore(
       typography,
       humanizer,
       realism,
+      columns,
+      setColumnPreset,
+      setColumnRatios,
+      toggleColumnDividers,
       applyPreset,
     };
   },
