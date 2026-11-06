@@ -85,10 +85,29 @@ export interface AiDocumentResult {
 
 /**
  * Standard AI Prompt Template that users can copy to send to ChatGPT/Gemini/Claude
+ * Clearly explains all supported types (tables, columns, markup, and papers).
  */
-export const AI_PROMPT_TEMPLATE = `Tolong buatkan tugas/catatan tulisan tangan dengan topik: [TULIS TOPIK DI SINI]
+export const AI_PROMPT_TEMPLATE = `Tolong buatkan tugas/catatan tulisan tangan dengan topik: [TULIS TOPIK TUGAS DI SINI]
 
-Formatkan HANYA dalam bentuk JSON BotNulis yang valid tanpa teks pembuka atau penutup markdown lain, dengan struktur berikut:
+Formatkan HANYA dalam bentuk JSON BotNulis yang valid tanpa penjelasan pembuka/penutup dan tanpa markdown lain di luar blok json, dengan panduan tipe berikut:
+
+### ATURAN & TIPE KONTEN BOTNULIS:
+1. "header": Informasi identitas (nama, nim, kelas, mata_pelajaran, tanggal).
+2. "paper": Pilihan kertas ("sidu-pad-bergaris" [Default], "folio-bergaris-31", "buku-sidu-25", "grid-math-paper", "hvs-polos").
+3. "pages": Array halaman (page 1, page 2, dst) yang membagi isi tugas agar tidak menumpuk.
+4. "content" di setiap halaman dapat berisi:
+   - String: Teks paragraf biasa.
+   - Markup Tulisan Alami:
+     * ~~kata yang dicoret~~ untuk efek coretan pulpen alami seperti salah tulis.
+     * ==kata stabilo== untuk efek highlighter stabilo kuning cerah.
+     * [merah]kata penting[/merah] untuk tinta pulpen merah.
+     * [biru]kata[/biru] untuk tinta pulpen biru.
+   - Tabel ("type": "table"):
+     * "headers": Judul kolom (bisa 2 kolom, 3 kolom, atau 4 kolom).
+     * "ratios": (Opsional) Persentase lebar 3 kolom, misal [15, 35, 50] untuk No-Istilah-Definisi, atau [33, 33, 34] untuk seimbang, atau [25, 37.5, 37.5] untuk komparasi.
+     * "rows": Array baris data [ ["1", "Istilah", "Penjelasan..."], ... ].
+
+### CONTOH STRUKTUR JSON LENGKAP:
 {
   "header": {
     "nama": "Nama Lengkap",
@@ -97,30 +116,31 @@ Formatkan HANYA dalam bentuk JSON BotNulis yang valid tanpa teks pembuka atau pe
     "mata_pelajaran": "Nama Mata Pelajaran",
     "tanggal": "${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}"
   },
-  "paper": "folio-bergaris-31",
+  "paper": "sidu-pad-bergaris",
   "pages": [
     {
       "page": 1,
-      "title": "JUDUL MATERI DI HALAMAN 1",
+      "title": "JUDUL MATERI HALAMAN 1",
       "content": [
-        "Paragraf pembuka penjelasan materi...",
-        "Paragraf pembahasan konsep utama...",
+        "Paragraf pengantar penjelasan materi tugas di halaman satu...",
+        "Paragraf pembahasan dengan ==istilah penting berstabilo== dan catatan ~~typo yang dicoret~~.",
         {
           "type": "table",
-          "headers": ["No", "Istilah / Topik", "Penjelasan Lengkap"],
+          "ratios": [15, 35, 50],
+          "headers": ["No", "Istilah / Konsep", "Penjelasan Lengkap"],
           "rows": [
-            ["1", "Istilah Pertama", "Penjelasan konsep pertama secara jelas."],
-            ["2", "Istilah Kedua", "Penjelasan konsep kedua secara jelas."]
+            ["1", "Konsep Pertama", "Uraian penjelasan konsep pertama yang duduk rapi di atas garis buku."],
+            ["2", "Konsep Kedua", "Uraian penjelasan konsep kedua yang otomatis turun baris jika panjang."]
           ]
         }
       ]
     },
     {
       "page": 2,
-      "title": "ANALISIS DAN KESIMPULAN DI HALAMAN 2",
+      "title": "ANALISIS DAN KESIMPULAN HALAMAN 2",
       "content": [
-        "Paragraf lanjutan atau studi kasus pada halaman 2...",
-        "Kesimpulan penutup tugas mandiri."
+        "Paragraf lanjutan atau studi kasus pada lembar halaman kedua...",
+        "[merah]Catatan Penting Guru:[/merah] Kesimpulan akhir materi tugas mandiri."
       ]
     }
   ]
@@ -241,7 +261,7 @@ function formatContentItem(item: AiPageContentItem): string {
   // Handle table content
   if (typeof item === 'object' && item !== null) {
     if ('type' in item && item.type === 'table') {
-      const tableItem = item as AiTableContent;
+      const tableItem = item as AiTableContent & { ratios?: number[] };
       const headers = tableItem.headers || tableItem.columns || ['Kolom 1', 'Kolom 2', 'Kolom 3'];
       const rows = (tableItem.rows || []).map((row) => row.map((cell) => String(cell)));
       const parsedTable: ParsedTable = {
@@ -250,7 +270,11 @@ function formatContentItem(item: AiPageContentItem): string {
         totalRows: rows.length,
         detectedFormat: 'array_of_arrays',
       };
-      return convertTableToColumnText(parsedTable);
+      let output = convertTableToColumnText(parsedTable);
+      if (Array.isArray(tableItem.ratios) && tableItem.ratios.length === 3) {
+        output = `[kolom: ${tableItem.ratios.join(', ')}]\n${output}`;
+      }
+      return output;
     }
 
     // Handle generic key-value dictionary as 2-column or 3-column table
