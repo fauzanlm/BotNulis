@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue';
 import { useDocumentStore } from '@/stores/documentStore';
 import { useStyleStore } from '@/stores/styleStore';
+import { usePaperStore } from '@/stores/paperStore';
 import type { ColumnPresetKey } from '@/types/style';
 import {
   parseJsonToTable,
@@ -9,6 +10,12 @@ import {
   SAMPLE_JSON_TEMPLATES,
   type ParsedTable,
 } from '@/utils/jsonTableImporter';
+import {
+  parseAiJsonDocument,
+  SAMPLE_AI_DOCUMENTS,
+  AI_PROMPT_TEMPLATE,
+  type AiDocumentResult,
+} from '@/utils/aiDocumentImporter';
 import {
   Table,
   FileCode,
@@ -22,6 +29,7 @@ import {
   Sliders,
   Sparkles,
   ArrowRight,
+  BookOpen,
 } from 'lucide-vue-next';
 
 const emit = defineEmits<{
@@ -30,31 +38,44 @@ const emit = defineEmits<{
 
 const documentStore = useDocumentStore();
 const styleStore = useStyleStore();
+const paperStore = usePaperStore();
 
 type ModalTab = 'json' | 'builder' | 'settings';
 const activeTab = ref<ModalTab>('json');
 
 // ----------------------------------------------------
-// TAB 1: JSON IMPORTER STATE & LOGIC
+// TAB 1: AI & JSON IMPORTER STATE & LOGIC
 // ----------------------------------------------------
-const jsonInput = ref(SAMPLE_JSON_TEMPLATES[0].json);
-const selectedPresetKey = ref<string>(SAMPLE_JSON_TEMPLATES[0].id);
+const jsonInput = ref(SAMPLE_AI_DOCUMENTS[0].json);
+const selectedPresetKey = ref<string>(SAMPLE_AI_DOCUMENTS[0].id);
 const jsonError = ref<string | null>(null);
+const parsedAiDoc = ref<AiDocumentResult | null>(null);
 const parsedTable = ref<ParsedTable | null>(null);
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const isCopied = ref(false);
+const isPromptCopied = ref(false);
+const previewActivePageIndex = ref(0);
 
 function validateAndParseJson() {
   jsonError.value = null;
+  parsedAiDoc.value = null;
   parsedTable.value = null;
+  previewActivePageIndex.value = 0;
+
   const raw = jsonInput.value.trim();
   if (!raw) return;
 
-  const result = parseJsonToTable(raw);
-  if (!result.table) {
-    jsonError.value = result.error || 'Format JSON tidak valid.';
+  const aiRes = parseAiJsonDocument(raw);
+  if (aiRes.success) {
+    parsedAiDoc.value = aiRes;
   } else {
-    parsedTable.value = result.table;
+    // Try table fallback
+    const tableRes = parseJsonToTable(raw);
+    if (tableRes.table) {
+      parsedTable.value = tableRes.table;
+    } else {
+      jsonError.value = aiRes.error || tableRes.error || 'Format JSON tidak valid.';
+    }
   }
 }
 
@@ -65,11 +86,29 @@ watch(jsonInput, () => {
   validateAndParseJson();
 });
 
+const aiPagesPreview = computed(() => {
+  if (!parsedAiDoc.value) return [];
+  return parsedAiDoc.value.formattedText.split('---page---').map((p) => p.trim());
+});
+
+async function copyAiPrompt() {
+  await navigator.clipboard.writeText(AI_PROMPT_TEMPLATE);
+  isPromptCopied.value = true;
+  setTimeout(() => {
+    isPromptCopied.value = false;
+  }, 2500);
+}
+
 function loadTemplate(id: string) {
   selectedPresetKey.value = id;
-  const found = SAMPLE_JSON_TEMPLATES.find((t) => t.id === id);
-  if (found) {
-    jsonInput.value = found.json;
+  const aiFound = SAMPLE_AI_DOCUMENTS.find((t) => t.id === id);
+  if (aiFound) {
+    jsonInput.value = aiFound.json;
+    return;
+  }
+  const tblFound = SAMPLE_JSON_TEMPLATES.find((t) => t.id === id);
+  if (tblFound) {
+    jsonInput.value = tblFound.json;
   }
 }
 
@@ -91,22 +130,44 @@ function handleFileUpload(event: Event) {
 }
 
 function applyJsonToDocument() {
-  if (!parsedTable.value) return;
-  const formatted = convertTableToColumnText(parsedTable.value);
-  
-  if (documentStore.text.trim()) {
-    documentStore.text = `${documentStore.text.trim()}\n\n${formatted}`;
-  } else {
-    documentStore.text = formatted;
+  if (parsedAiDoc.value && parsedAiDoc.value.success) {
+    documentStore.text = parsedAiDoc.value.formattedText;
+    if (parsedAiDoc.value.header) {
+      if (parsedAiDoc.value.header.name) documentStore.header.name = parsedAiDoc.value.header.name;
+      if (parsedAiDoc.value.header.date) documentStore.header.date = parsedAiDoc.value.header.date;
+      if (parsedAiDoc.value.header.subject) documentStore.header.subject = parsedAiDoc.value.header.subject;
+    }
+    if (parsedAiDoc.value.paperId) {
+      paperStore.setPaper(parsedAiDoc.value.paperId);
+    }
+    if (parsedAiDoc.value.fontFamily) {
+      styleStore.typography.fontFamily = parsedAiDoc.value.fontFamily;
+    }
+    if (parsedAiDoc.value.inkColor) {
+      styleStore.typography.color = parsedAiDoc.value.inkColor;
+    }
+    documentStore.commit();
+    emit('close');
+    return;
   }
-  documentStore.commit();
-  emit('close');
+
+  if (parsedTable.value) {
+    const formatted = convertTableToColumnText(parsedTable.value);
+    if (documentStore.text.trim()) {
+      documentStore.text = `${documentStore.text.trim()}\n\n${formatted}`;
+    } else {
+      documentStore.text = formatted;
+    }
+    documentStore.commit();
+    emit('close');
+  }
 }
 
 async function copyJsonFormatted() {
-  if (!parsedTable.value) return;
-  const formatted = convertTableToColumnText(parsedTable.value);
-  await navigator.clipboard.writeText(formatted);
+  const textToCopy = parsedAiDoc.value?.formattedText || (parsedTable.value ? convertTableToColumnText(parsedTable.value) : '');
+  if (!textToCopy) return;
+
+  await navigator.clipboard.writeText(textToCopy);
   isCopied.value = true;
   setTimeout(() => {
     isCopied.value = false;
@@ -267,18 +328,18 @@ const customCol2 = computed({
 <template>
   <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md transition-opacity animate-in fade-in">
     <!-- Main Modal Liquid Glass Window -->
-    <div class="liquid-glass-popover w-full max-w-4xl h-[92vh] max-h-[840px] rounded-3xl flex flex-col overflow-hidden relative shadow-2xl">
+    <div class="liquid-glass-popover w-full max-w-4xl h-[92vh] max-h-[860px] rounded-3xl flex flex-col overflow-hidden relative shadow-2xl">
       <!-- Top Titlebar Chrome -->
       <div class="h-14 border-b border-white/40 dark:border-white/10 px-4 sm:px-6 flex items-center justify-between flex-shrink-0 bg-white/20 dark:bg-white/[0.02]">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20 shadow-sm">
-            <Table class="w-4 h-4" />
+            <BookOpen class="w-4 h-4" />
           </div>
           <div>
             <h2 class="text-xs sm:text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100 flex items-center gap-2">
-              Tabel & 3 Kolom Studio
+              AI JSON & Tabel Studio
               <span class="text-[9px] px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 font-bold border border-indigo-500/25">
-                Multi-Kolom & Import JSON
+                Struktur Halaman AI & 3 Kolom
               </span>
             </h2>
           </div>
@@ -307,7 +368,7 @@ const customCol2 = computed({
             ]"
           >
             <FileCode class="w-3.5 h-3.5" />
-            Import JSON
+            Import JSON AI
           </button>
           <button
             @click="activeTab = 'builder'"
@@ -336,35 +397,74 @@ const customCol2 = computed({
         </div>
 
         <div class="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:flex items-center gap-1.5">
-          <Sparkles class="w-3.5 h-3.5 text-amber-500" />
-          Otomatis pas di garis buku tanpa geser
+          <Sparkles class="w-3.5 h-3.5 text-indigo-500" />
+          Halaman & tabel otomatis tersusun rapi di garis buku
         </div>
       </div>
 
       <!-- Tab Content Area -->
       <div class="flex-1 overflow-y-auto p-4 sm:p-6">
         <!-- ===================================== -->
-        <!-- TAB 1: JSON IMPORTER                  -->
+        <!-- TAB 1: AI & JSON IMPORTER             -->
         <!-- ===================================== -->
         <div v-if="activeTab === 'json'" class="space-y-4">
+          <!-- Prompt AI Generator Banner -->
+          <div class="p-3 sm:p-3.5 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-blue-500/10 border border-indigo-500/20 flex items-center justify-between flex-wrap gap-2.5 shadow-sm">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                <Sparkles class="w-4 h-4" />
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                  Minta AI Buatkan JSON Dokumen (Halaman 1, 2 & Tabel)
+                </h4>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-snug">
+                  Salin prompt ini ke ChatGPT / Gemini, minta buatkan materi/tugasmu, lalu paste hasil JSON-nya ke sini!
+                </p>
+              </div>
+            </div>
+
+            <button
+              @click="copyAiPrompt"
+              class="liquid-glass-btn px-3.5 py-1.5 rounded-xl text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 flex-shrink-0 hover:bg-indigo-50/50 shadow-sm border border-indigo-400/30"
+            >
+              <Check v-if="isPromptCopied" class="w-3.5 h-3.5 text-emerald-500" />
+              <Copy v-else class="w-3.5 h-3.5" />
+              {{ isPromptCopied ? 'Prompt Berhasil Disalin!' : 'Salin Prompt untuk AI' }}
+            </button>
+          </div>
+
           <!-- Preset Chips & Upload Button -->
           <div class="flex items-center justify-between flex-wrap gap-2">
             <div class="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
               <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mr-1 flex-shrink-0">
-                Contoh JSON:
+                Contoh JSON AI:
               </span>
               <button
-                v-for="tpl in SAMPLE_JSON_TEMPLATES"
+                v-for="tpl in SAMPLE_AI_DOCUMENTS"
                 :key="tpl.id"
                 @click="loadTemplate(tpl.id)"
                 :class="[
                   'px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all flex-shrink-0',
                   selectedPresetKey === tpl.id
-                    ? 'bg-indigo-500 text-white font-semibold shadow-sm'
+                    ? 'bg-indigo-600 text-white font-semibold shadow-sm'
                     : 'bg-white/40 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white/60',
                 ]"
               >
                 {{ tpl.title }}
+              </button>
+              <button
+                v-for="tbl in SAMPLE_JSON_TEMPLATES"
+                :key="tbl.id"
+                @click="loadTemplate(tbl.id)"
+                :class="[
+                  'px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all flex-shrink-0',
+                  selectedPresetKey === tbl.id
+                    ? 'bg-indigo-600 text-white font-semibold shadow-sm'
+                    : 'bg-white/40 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white/60',
+                ]"
+              >
+                {{ tbl.title }}
               </button>
             </div>
 
@@ -387,14 +487,14 @@ const customCol2 = computed({
             </div>
           </div>
 
-          <!-- Dual Column: JSON Editor & Live Table Preview -->
+          <!-- Dual Column: JSON Editor & Live Preview -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <!-- Left: Textarea JSON -->
             <div class="flex flex-col space-y-1.5">
               <div class="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
                 <span class="flex items-center gap-1.5">
                   <FileCode class="w-3.5 h-3.5 text-indigo-500" />
-                  Editor Kode JSON
+                  Editor / Paste JSON AI
                 </span>
                 <span
                   v-if="jsonError"
@@ -403,36 +503,77 @@ const customCol2 = computed({
                   {{ jsonError }}
                 </span>
                 <span
+                  v-else-if="parsedAiDoc"
+                  class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800"
+                >
+                  ✓ Terdeteksi {{ parsedAiDoc.pageCount }} Halaman Dokumen
+                </span>
+                <span
                   v-else-if="parsedTable"
                   class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800"
                 >
-                  ✓ JSON Valid ({{ parsedTable.rows.length }} Baris)
+                  ✓ Tabel Terdeteksi ({{ parsedTable.rows.length }} Baris)
                 </span>
               </div>
               <textarea
                 v-model="jsonInput"
-                rows="11"
-                placeholder='Paste data JSON kamu di sini... e.g. [{"No": "1", "Istilah": "...", "Definisi": "..."}]'
+                rows="12"
+                placeholder='Paste JSON dari ChatGPT / Gemini di sini... e.g. {"header": {...}, "pages": [{"page": 1, ...}]}'
                 class="w-full font-mono text-[11px] leading-relaxed p-3 rounded-2xl bg-white/70 dark:bg-slate-900/70 border border-slate-200/80 dark:border-white/10 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none shadow-inner"
                 spellcheck="false"
               ></textarea>
             </div>
 
-            <!-- Right: Parsed Preview -->
+            <!-- Right: Parsed AI Document Live Preview -->
             <div class="flex flex-col space-y-1.5">
               <div class="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
                 <span class="flex items-center gap-1.5">
-                  <Table class="w-3.5 h-3.5 text-indigo-500" />
-                  Pratinjau Hasil Tabel (3 Kolom)
+                  <BookOpen class="w-3.5 h-3.5 text-indigo-500" />
+                  Pratinjau Hasil Dokumen
                 </span>
-                <span class="text-[10px] text-slate-400">
-                  Format: Kolom 1 | Kolom 2 | Kolom 3
-                </span>
+                <!-- Page Tabs in Preview -->
+                <div v-if="aiPagesPreview.length > 1" class="flex items-center gap-1">
+                  <button
+                    v-for="(_, pIdx) in aiPagesPreview"
+                    :key="pIdx"
+                    @click="previewActivePageIndex = pIdx"
+                    :class="[
+                      'px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all',
+                      previewActivePageIndex === pIdx
+                        ? 'bg-indigo-600 text-white shadow-sm'
+                        : 'bg-white/60 dark:bg-white/10 text-slate-600 dark:text-slate-300 hover:bg-white',
+                    ]"
+                  >
+                    Hal {{ pIdx + 1 }}
+                  </button>
+                </div>
               </div>
 
-              <!-- Table Preview Container -->
-              <div class="h-[235px] overflow-auto rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-slate-900/50 p-2">
-                <div v-if="parsedTable && parsedTable.rows.length > 0">
+              <!-- Header Summary Badges -->
+              <div
+                v-if="parsedAiDoc?.header"
+                class="p-2 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-900/40 text-[10px] flex items-center justify-between flex-wrap gap-1"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-indigo-900 dark:text-indigo-200">
+                    {{ parsedAiDoc.header.name || 'Siswa' }}
+                  </span>
+                  <span class="text-slate-400">•</span>
+                  <span class="text-slate-600 dark:text-slate-300">
+                    {{ parsedAiDoc.header.subject || 'Tugas Mandiri' }}
+                  </span>
+                </div>
+                <div class="text-indigo-600 dark:text-indigo-400 font-mono font-semibold">
+                  {{ parsedAiDoc.header.date }}
+                </div>
+              </div>
+
+              <!-- Content Preview Container -->
+              <div class="h-[215px] overflow-auto rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-slate-900/50 p-3 text-[11px] font-mono leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                <div v-if="aiPagesPreview.length > 0">
+                  {{ aiPagesPreview[previewActivePageIndex] || aiPagesPreview[0] }}
+                </div>
+                <div v-else-if="parsedTable && parsedTable.rows.length > 0">
                   <table class="w-full text-[11px] border-collapse">
                     <thead>
                       <tr class="border-b border-indigo-200 dark:border-indigo-900/50 text-indigo-900 dark:text-indigo-300 bg-indigo-50/60 dark:bg-indigo-950/30">
@@ -462,8 +603,8 @@ const customCol2 = computed({
                     </tbody>
                   </table>
                 </div>
-                <div v-else class="h-full flex flex-col items-center justify-center text-slate-400 text-xs">
-                  <p>Masukkan atau upload JSON valid untuk melihat preview tabel di sini.</p>
+                <div v-else class="h-full flex flex-col items-center justify-center text-slate-400 text-xs text-center p-4">
+                  <p>Paste JSON AI dari ChatGPT/Gemini atau pilih contoh di atas untuk melihat pratinjau halaman.</p>
                 </div>
               </div>
             </div>
@@ -473,19 +614,19 @@ const customCol2 = computed({
           <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-200/60 dark:border-white/5">
             <button
               @click="copyJsonFormatted"
-              :disabled="!parsedTable"
+              :disabled="!parsedAiDoc && !parsedTable"
               class="liquid-glass-btn px-4 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 disabled:opacity-40"
             >
               <Check v-if="isCopied" class="w-3.5 h-3.5 text-emerald-500" />
               <Copy v-else class="w-3.5 h-3.5" />
-              {{ isCopied ? 'Tersalin!' : 'Salin Teks Kolom' }}
+              {{ isCopied ? 'Tersalin!' : 'Salin Teks Format' }}
             </button>
             <button
               @click="applyJsonToDocument"
-              :disabled="!parsedTable"
+              :disabled="!parsedAiDoc && !parsedTable"
               class="px-5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              Terapkan ke Tulisan Tangan
+              Terapkan Otomatis (Header & Halaman)
               <ArrowRight class="w-3.5 h-3.5" />
             </button>
           </div>

@@ -113,6 +113,14 @@ export function usePagination() {
         continue; // Layout directive does not take physical ruling space
       }
 
+      // Check for explicit page break markers (e.g. ---page---, ---halaman---, [page], [halaman])
+      if (/^(?:---|===)(?:page|halaman|break)(?:---|===)$|^\[(?:page|halaman|page_break)\]$/i.test(rawLineText)) {
+        if (currentLineIndex > 0 || currentLineWords.length > 0) {
+          startNewPage();
+        }
+        continue;
+      }
+
       // Skip markdown table separator rows (|---|---|)
       if (isTableSeparatorLine(lineTokens)) {
         continue;

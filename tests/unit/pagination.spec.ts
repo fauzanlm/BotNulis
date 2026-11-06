@@ -87,4 +87,18 @@ describe('usePagination', () => {
     expect(pages[0].pageIndex).toBe(0);
     expect(pages[1].pageIndex).toBe(1);
   });
+
+  it('should split onto next page immediately when encountering explicit page break marker', () => {
+    const tokens: RenderToken[][] = [
+      [{ type: 'word', text: 'Halaman_1_Text' }],
+      [{ type: 'word', text: '---page---' }],
+      [{ type: 'word', text: 'Halaman_2_Text' }],
+    ];
+
+    const pages = layoutDocument(tokens, mockPaper, mockTypography, mockHumanizer, mockMeasureCtx);
+
+    expect(pages.length).toBe(2);
+    expect(pages[0].lines[0].words[0].text).toBe('Halaman_1_Text');
+    expect(pages[1].lines[0].words[0].text).toBe('Halaman_2_Text');
+  });
 });

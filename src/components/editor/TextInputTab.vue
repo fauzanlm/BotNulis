@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useDocumentStore } from '@/stores/documentStore';
+import { usePaperStore } from '@/stores/paperStore';
+import { useStyleStore } from '@/stores/styleStore';
 import { parseJsonToTable, convertTableToColumnText } from '@/utils/jsonTableImporter';
+import { parseAiJsonDocument } from '@/utils/aiDocumentImporter';
 import {
   RotateCcw,
   Strikethrough,
@@ -17,6 +20,8 @@ import {
 } from 'lucide-vue-next';
 
 const documentStore = useDocumentStore();
+const paperStore = usePaperStore();
+const styleStore = useStyleStore();
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
 function insertTag(openTag: string, closeTag: string) {
@@ -74,6 +79,19 @@ function insertColumnPipe() {
   }, 10);
 }
 
+const detectedAiDoc = computed(() => {
+  const t = documentStore.text.trim();
+  if (
+    (t.startsWith('[') && t.endsWith(']')) ||
+    (t.startsWith('{') && t.endsWith('}')) ||
+    (t.startsWith('```') && t.endsWith('```'))
+  ) {
+    const res = parseAiJsonDocument(t);
+    if (res.success) return res;
+  }
+  return null;
+});
+
 const isJsonInText = computed(() => {
   const t = documentStore.text.trim();
   return (
@@ -82,6 +100,27 @@ const isJsonInText = computed(() => {
     (t.includes('":') && t.includes('{') && t.includes('}'))
   );
 });
+
+function applyDetectedAiJson() {
+  if (!detectedAiDoc.value) return;
+  const res = detectedAiDoc.value;
+  documentStore.text = res.formattedText;
+  if (res.header) {
+    if (res.header.name) documentStore.header.name = res.header.name;
+    if (res.header.date) documentStore.header.date = res.header.date;
+    if (res.header.subject) documentStore.header.subject = res.header.subject;
+  }
+  if (res.paperId) {
+    paperStore.setPaper(res.paperId);
+  }
+  if (res.fontFamily) {
+    styleStore.typography.fontFamily = res.fontFamily;
+  }
+  if (res.inkColor) {
+    styleStore.typography.color = res.inkColor;
+  }
+  documentStore.commit();
+}
 
 function convertJsonInText() {
   const result = parseJsonToTable(documentStore.text);
@@ -358,9 +397,36 @@ const wordCount = computed(() => {
         </div>
       </div>
 
-      <!-- Smart JSON Detection Floating Pill Banner -->
+      <!-- Smart AI Document JSON Detection Banner -->
       <div
-        v-if="isJsonInText"
+        v-if="detectedAiDoc"
+        class="p-2.5 rounded-2xl bg-indigo-50/90 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800/80 flex items-center justify-between gap-2 shadow-sm animate-in fade-in"
+      >
+        <div class="flex items-center gap-2 text-xs text-indigo-900 dark:text-indigo-200">
+          <Sparkles class="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0 animate-pulse" />
+          <span class="font-medium text-[11px]">
+            Dokumen AI terdeteksi ({{ detectedAiDoc.pageCount }} Halaman<span v-if="detectedAiDoc.header">, Header Lengkap</span>). Ingin terapkan otomatis?
+          </span>
+        </div>
+        <div class="flex items-center gap-1.5 flex-shrink-0">
+          <button
+            @click="applyDetectedAiJson"
+            class="px-3 py-1 rounded-xl text-[10px] font-bold bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm transition"
+          >
+            Terapkan ke Kertas
+          </button>
+          <button
+            @click="documentStore.openTableModal()"
+            class="liquid-glass-btn px-2 py-1 rounded-xl text-[10px] font-semibold text-slate-600 dark:text-slate-300"
+          >
+            Lihat Detail
+          </button>
+        </div>
+      </div>
+
+      <!-- Fallback Smart Table JSON Detection Banner -->
+      <div
+        v-else-if="isJsonInText"
         class="p-2.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/60 flex items-center justify-between gap-2 shadow-sm animate-in fade-in"
       >
         <div class="flex items-center gap-2 text-xs text-indigo-900 dark:text-indigo-200">
