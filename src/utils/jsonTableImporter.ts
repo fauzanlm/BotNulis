@@ -55,17 +55,21 @@ export function parseJsonToTable(
       }
     }
     const keyList = Array.from(allKeys);
-    const headers = providedHeaders ? [...providedHeaders] : keyList.slice(0, 3);
-    while (headers.length < 3) {
+    const headers = providedHeaders && providedHeaders.length >= 2
+      ? [...providedHeaders]
+      : (keyList.length >= 2 ? keyList : ['No', 'Kolom 2', 'Kolom 3']);
+    while (headers.length < 2) {
       headers.push(`Kolom ${headers.length + 1}`);
     }
 
     const rows: string[][] = parsed.map((item: any, idx: number) => {
-      return [
-        String(item[headers[0]] ?? (idx + 1)),
-        String(item[headers[1]] ?? ''),
-        String(item[headers[2]] ?? ''),
-      ];
+      return headers.map((h, hIdx) => {
+        if (item[h] !== undefined && item[h] !== null) {
+          return String(item[h]);
+        }
+        if (hIdx === 0) return String(idx + 1);
+        return '';
+      });
     });
 
     return {
@@ -88,22 +92,23 @@ export function parseJsonToTable(
     let headers: string[] = [];
     let startIdx = 0;
 
-    if (providedHeaders && providedHeaders.length > 0) {
+    if (providedHeaders && providedHeaders.length >= 2) {
       headers = [...providedHeaders];
       startIdx = 0; // all rows are data rows
     } else {
       // Check if first row contains column headers
       const firstRowStrings = rawRows[0].every((cell) => typeof cell === 'string');
       if (firstRowStrings && rawRows.length > 1) {
-        headers = rawRows[0].slice(0, 3).map((h, i) => String(h || `Kolom ${i + 1}`));
+        headers = rawRows[0].map((h, i) => String(h || `Kolom ${i + 1}`));
         startIdx = 1;
       } else {
-        headers = ['Kolom 1', 'Kolom 2', 'Kolom 3'];
+        const maxLen = Math.max(...rawRows.map((r) => (Array.isArray(r) ? r.length : 0)));
+        headers = Array.from({ length: Math.max(2, maxLen) }, (_, i) => `Kolom ${i + 1}`);
         startIdx = 0;
       }
     }
 
-    while (headers.length < 3) {
+    while (headers.length < 2) {
       headers.push(`Kolom ${headers.length + 1}`);
     }
 
@@ -111,11 +116,11 @@ export function parseJsonToTable(
     for (let r = startIdx; r < rawRows.length; r++) {
       const rowData = rawRows[r];
       if (!Array.isArray(rowData)) continue;
-      rows.push([
-        String(rowData[0] ?? (rows.length + 1)),
-        String(rowData[1] ?? ''),
-        String(rowData[2] ?? (rowData.slice(2).join(' '))),
-      ]);
+      const rowCells: string[] = [];
+      for (let c = 0; c < headers.length; c++) {
+        rowCells.push(rowData[c] !== undefined && rowData[c] !== null ? String(rowData[c]) : '');
+      }
+      rows.push(rowCells);
     }
 
     return {
@@ -140,7 +145,7 @@ export function parseJsonToTable(
         (k) => Array.isArray(obj[k])
       );
       const customHeaders = headersKey && Array.isArray(obj[headersKey])
-        ? obj[headersKey].slice(0, 3).map(String)
+        ? obj[headersKey].map(String)
         : providedHeaders;
 
       const innerRes = parseJsonToTable(JSON.stringify(obj[dataKey]), customHeaders);
@@ -169,28 +174,31 @@ export function parseJsonToTable(
     }
   }
 
-  return { table: null, error: 'Struktur JSON tidak dapat diubah menjadi 3 kolom.' };
+  return { table: null, error: 'Struktur JSON tidak dapat diubah menjadi tabel kolom.' };
 }
 
 /**
- * Converts parsed table structure into pipe-separated 3-column text lines for BotNulis editor
+ * Converts parsed table structure into pipe-separated multi-column text lines for BotNulis editor (2–6+ columns)
  */
 export function convertTableToColumnText(table: ParsedTable, options: ConvertOptions = {}): string {
   const { includeHeader = true, autoNumber = false, maxRows } = options;
   const lines: string[] = [];
 
   // Header line
-  if (includeHeader && table.headers.length >= 3) {
-    lines.push(`${table.headers[0].trim()} | ${table.headers[1].trim()} | ${table.headers[2].trim()}`);
+  if (includeHeader && table.headers.length >= 2) {
+    lines.push(table.headers.map((h) => h.trim()).join(' | '));
   }
 
   // Data rows
   const rowList = maxRows ? table.rows.slice(0, maxRows) : table.rows;
   rowList.forEach((row, idx) => {
-    const col1 = autoNumber ? String(idx + 1) : (row[0] ?? String(idx + 1)).trim();
-    const col2 = (row[1] ?? '').trim();
-    const col3 = (row[2] ?? '').trim();
-    lines.push(`${col1} | ${col2} | ${col3}`);
+    const formattedCells = table.headers.map((_, colIdx) => {
+      if (colIdx === 0 && autoNumber) {
+        return String(idx + 1);
+      }
+      return (row[colIdx] ?? (colIdx === 0 ? String(idx + 1) : '')).trim();
+    });
+    lines.push(formattedCells.join(' | '));
   });
 
   return lines.join('\n');
@@ -200,6 +208,23 @@ export function convertTableToColumnText(table: ParsedTable, options: ConvertOpt
  * Preset JSON sample templates for instant testing in the UI
  */
 export const SAMPLE_JSON_TEMPLATES = [
+  {
+    id: 'exam-schedule-6cols',
+    title: 'Jadwal Ujian Sekolah (6 Kolom)',
+    description: '6 Kolom: No, Hari / Tanggal, Waktu, Mata Pelajaran, Ruang, dan Pengawas',
+    json: JSON.stringify(
+      [
+        { no: '1', hari: 'Senin, 20 Nov', waktu: '07.30 - 09.30', mapel: 'Matematika Wajib', ruang: 'R. 101', pengawas: 'Bpk. Hendra, M.Pd' },
+        { no: '2', hari: 'Senin, 20 Nov', waktu: '10.00 - 11.30', mapel: 'Bahasa Indonesia', ruang: 'R. 101', pengawas: 'Ibu Siti Aminah, S.Pd' },
+        { no: '3', hari: 'Selasa, 21 Nov', waktu: '07.30 - 09.30', mapel: 'Fisika Terapan', ruang: 'R. 104', pengawas: 'Bpk. Joko Susilo, M.Sc' },
+        { no: '4', hari: 'Selasa, 21 Nov', waktu: '10.00 - 11.30', mapel: 'Kimia Organik', ruang: 'R. 104', pengawas: 'Ibu Ratna Dewi, S.Si' },
+        { no: '5', hari: 'Rabu, 22 Nov', waktu: '07.30 - 09.30', mapel: 'Biologi Seluler', ruang: 'R. 102', pengawas: 'Bpk. Agus Salim, M.Bio' },
+        { no: '6', hari: 'Kamis, 23 Nov', waktu: '07.30 - 09.30', mapel: 'Bahasa Inggris', ruang: 'R. 103', pengawas: 'Miss Diana Ross, M.Ed' }
+      ],
+      null,
+      2
+    ),
+  },
   {
     id: 'ai-glossary',
     title: 'Glosarium AI & Machine Learning',

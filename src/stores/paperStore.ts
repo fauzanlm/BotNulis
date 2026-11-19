@@ -6,11 +6,16 @@ import { PAPER_PRESETS } from '@/utils/paperPresets';
 export const usePaperStore = defineStore(
   'paper',
   () => {
-    const currentPaperId = ref<string>('sidu-pad-bergaris');
+    const currentPaperId = ref<string>('folio-sidu-real');
     const customPapers = ref<PaperTemplate[]>([]);
 
     const allPapers = computed(() => {
-      return [...PAPER_PRESETS, ...customPapers.value];
+      const presetIds = new Set(PAPER_PRESETS.map((p) => p.id));
+      // Deduplicate in case user scanned 'Scan Kertas (09.44)' previously into localStorage
+      const filteredCustom = customPapers.value.filter(
+        (p) => !presetIds.has(p.id) && p.name !== 'Scan Kertas (09.44)'
+      );
+      return [...PAPER_PRESETS, ...filteredCustom];
     });
 
     const currentPaper = computed<PaperTemplate>(() => {
@@ -29,6 +34,13 @@ export const usePaperStore = defineStore(
       currentPaperId.value = paper.id;
     }
 
+    function removeCustomPaper(id: string) {
+      customPapers.value = customPapers.value.filter((p) => p.id !== id);
+      if (currentPaperId.value === id) {
+        currentPaperId.value = PAPER_PRESETS[0].id;
+      }
+    }
+
     return {
       currentPaperId,
       customPapers,
@@ -36,6 +48,7 @@ export const usePaperStore = defineStore(
       currentPaper,
       setPaper,
       addCustomPaper,
+      removeCustomPaper,
     };
   },
   {

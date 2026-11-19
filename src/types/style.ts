@@ -35,12 +35,12 @@ export interface HeaderConfig {
   pageNumber: string;
 }
 
-export type ColumnPresetKey = 'vocab' | 'equal' | 'comparison' | 'custom';
+export type ColumnPresetKey = 'vocab' | 'equal' | 'comparison' | 'schedule6' | 'custom';
 
 export interface ColumnConfig {
   enabled: boolean;
   preset: ColumnPresetKey;
-  ratios: [number, number, number]; // e.g. [0.15, 0.35, 0.50]
-  showDividers: boolean;            // Draw vertical column divider line
-  gap: number;                      // Gap between columns in px
+  ratios: number[];      // Flexible column ratios e.g. [0.15, 0.35, 0.50] or 6 columns [0.08, 0.22, 0.18, 0.24, 0.13, 0.15]
+  showDividers: boolean; // Draw vertical column divider line
+  gap: number;           // Gap between columns in px
 }

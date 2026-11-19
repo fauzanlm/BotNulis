@@ -291,7 +291,7 @@ const wordCount = computed(() => {
           <button
             @click="documentStore.openTableModal()"
             class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-xl text-indigo-600 dark:text-indigo-400 border-indigo-400/30"
-            title="Buka Studio Tabel & Import JSON 3 Kolom"
+            title="Buka Studio Tabel & Import JSON (2–6 Kolom)"
           >
             <Table class="w-3.5 h-3.5" />
             <span>Tabel & JSON</span>
@@ -431,7 +431,7 @@ const wordCount = computed(() => {
       >
         <div class="flex items-center gap-2 text-xs text-indigo-900 dark:text-indigo-200">
           <Sparkles class="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
-          <span class="font-medium text-[11px]">Format JSON terdeteksi di teks. Ingin jadikan tabel 3 kolom?</span>
+          <span class="font-medium text-[11px]">Format JSON terdeteksi di teks. Ingin jadikan tabel rapi?</span>
         </div>
         <div class="flex items-center gap-1 flex-shrink-0">
           <button

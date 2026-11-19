@@ -33,7 +33,7 @@ export function usePagination() {
     let currentX = currentLineMarginLeft;
     let globalWordIndex = 0;
 
-    let activeRatios: [number, number, number] = columnsConfig?.ratios
+    let activeRatios: number[] = columnsConfig?.ratios && columnsConfig.ratios.length >= 2
       ? [...columnsConfig.ratios]
       : [0.15, 0.35, 0.5];
     const showDividers = columnsConfig?.showDividers ?? false;
@@ -131,10 +131,15 @@ export function usePagination() {
         const cols = splitTokensIntoColumns(lineTokens);
         if (cols.length >= 2) {
           let ratios: number[];
-          if (cols.length === 3) {
+          if (activeRatios.length === cols.length) {
             ratios = activeRatios;
           } else if (cols.length === 2) {
             ratios = [0.35, 0.65];
+          } else if (cols.length === 3) {
+            ratios = [0.15, 0.35, 0.5];
+          } else if (cols.length === 6) {
+            // Smart default 6-column schedule ratio: [No, Hari/Tgl, Jam, Mapel, Ruang, Pengawas]
+            ratios = [0.08, 0.22, 0.18, 0.24, 0.13, 0.15];
           } else {
             ratios = Array(cols.length).fill(1 / cols.length);
           }

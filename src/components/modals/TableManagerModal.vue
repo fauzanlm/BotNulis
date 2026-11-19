@@ -200,7 +200,7 @@ const builderRows = ref<GridCell[][]>([
   ],
 ]);
 
-function setBuilderPreset(type: 'vocab' | 'comparison' | 'schedule') {
+function setBuilderPreset(type: 'vocab' | 'comparison' | 'schedule' | 'schedule6') {
   if (type === 'vocab') {
     builderHeaders.value = ['No', 'Istilah', 'Pengertian'];
     builderRows.value = [
@@ -225,6 +225,14 @@ function setBuilderPreset(type: 'vocab' | 'comparison' | 'schedule') {
       [{ value: 'Jumat' }, { value: 'B. Indonesia' }, { value: 'Menulis teks editorial opini' }],
     ];
     styleStore.setColumnPreset('vocab');
+  } else if (type === 'schedule6') {
+    builderHeaders.value = ['No', 'Hari / Tgl', 'Waktu', 'Mata Pelajaran', 'Ruang', 'Pengawas'];
+    builderRows.value = [
+      [{ value: '1' }, { value: 'Senin, 20 Nov' }, { value: '07.30 - 09.30' }, { value: 'Matematika Wajib' }, { value: 'R. 101' }, { value: 'Bpk. Hendra, M.Pd' }],
+      [{ value: '2' }, { value: 'Senin, 20 Nov' }, { value: '10.00 - 11.30' }, { value: 'Bahasa Indonesia' }, { value: 'R. 101' }, { value: 'Ibu Siti Aminah, S.Pd' }],
+      [{ value: '3' }, { value: 'Selasa, 21 Nov' }, { value: '07.30 - 09.30' }, { value: 'Fisika Terapan' }, { value: 'R. 104' }, { value: 'Bpk. Joko Susilo, M.Sc' }],
+    ];
+    styleStore.setColumnPreset('schedule6');
   }
 }
 
@@ -240,7 +248,7 @@ function removeBuilderRow(index: number) {
 }
 
 function addBuilderColumn() {
-  if (builderHeaders.value.length >= 4) return;
+  if (builderHeaders.value.length >= 6) return; // Support up to 6 columns
   builderHeaders.value.push(`Kolom ${builderHeaders.value.length + 1}`);
   for (const row of builderRows.value) {
     row.push({ value: '' });
@@ -262,7 +270,11 @@ function applyBuilderToDocument() {
     totalRows: builderRows.value.length,
     detectedFormat: 'array_of_arrays',
   };
-  const formatted = convertTableToColumnText(table);
+  let formatted = convertTableToColumnText(table);
+  // If 6 columns, prepend default schedule ratio directive so spacing is dialed in
+  if (builderHeaders.value.length === 6) {
+    formatted = `[kolom: 8, 22, 18, 24, 13, 15]\n${formatted}`;
+  }
 
   if (documentStore.text.trim()) {
     documentStore.text = `${documentStore.text.trim()}\n\n${formatted}`;
@@ -278,8 +290,14 @@ function applyBuilderToDocument() {
 // ----------------------------------------------------
 const columnPresets: { id: ColumnPresetKey; name: string; ratios: string; desc: string }[] = [
   {
+    id: 'schedule6',
+    name: 'Jadwal 6 Kolom (Ujian / Piket)',
+    ratios: '8% : 22% : 18% : 24% : 13% : 15%',
+    desc: 'Proporsi khusus 6 kolom: No, Hari/Tgl, Jam, Mapel, Ruang, dan Pengawas.',
+  },
+  {
     id: 'vocab',
-    name: 'Kamus / Glosarium',
+    name: 'Kamus / Glosarium (3 Kolom)',
     ratios: '15% : 35% : 50%',
     desc: 'Ideal untuk Nomor, Istilah, dan Penjelasan panjang.',
   },
@@ -291,36 +309,36 @@ const columnPresets: { id: ColumnPresetKey; name: string; ratios: string; desc: 
   },
   {
     id: 'comparison',
-    name: 'Komparasi / Pro-Kontra',
+    name: 'Komparasi / Pro-Kontra (3 Kolom)',
     ratios: '25% : 37.5% : 37.5%',
     desc: 'Cocok untuk perbandingan 2 aspek dengan kategori.',
   },
 ];
 
 const customCol0 = computed({
-  get: () => Math.round(styleStore.columns.ratios[0] * 100),
+  get: () => Math.round((styleStore.columns.ratios[0] ?? 0.33) * 100),
   set: (val: number) => {
-    const r1 = styleStore.columns.ratios[1];
-    const r2 = styleStore.columns.ratios[2];
-    styleStore.setColumnRatios([val / 100, r1, r2]);
+    const cur = [...styleStore.columns.ratios];
+    cur[0] = val / 100;
+    styleStore.setColumnRatios(cur);
   },
 });
 
 const customCol1 = computed({
-  get: () => Math.round(styleStore.columns.ratios[1] * 100),
+  get: () => Math.round((styleStore.columns.ratios[1] ?? 0.33) * 100),
   set: (val: number) => {
-    const r0 = styleStore.columns.ratios[0];
-    const r2 = styleStore.columns.ratios[2];
-    styleStore.setColumnRatios([r0, val / 100, r2]);
+    const cur = [...styleStore.columns.ratios];
+    cur[1] = val / 100;
+    styleStore.setColumnRatios(cur);
   },
 });
 
 const customCol2 = computed({
-  get: () => Math.round(styleStore.columns.ratios[2] * 100),
+  get: () => Math.round((styleStore.columns.ratios[2] ?? 0.34) * 100),
   set: (val: number) => {
-    const r0 = styleStore.columns.ratios[0];
-    const r1 = styleStore.columns.ratios[1];
-    styleStore.setColumnRatios([r0, r1, val / 100]);
+    const cur = [...styleStore.columns.ratios];
+    cur[2] = val / 100;
+    styleStore.setColumnRatios(cur);
   },
 });
 </script>
@@ -339,7 +357,7 @@ const customCol2 = computed({
             <h2 class="text-xs sm:text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100 flex items-center gap-2">
               AI JSON & Tabel Studio
               <span class="text-[9px] px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 font-bold border border-indigo-500/25">
-                Struktur Halaman AI & 3 Kolom
+                Struktur Halaman AI & 2–6 Kolom
               </span>
             </h2>
           </div>
@@ -660,6 +678,12 @@ const customCol2 = computed({
               >
                 Hari - Pelajaran - Tugas
               </button>
+              <button
+                @click="setBuilderPreset('schedule6')"
+                class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-500/25 transition-all border border-indigo-400/30"
+              >
+                + Jadwal 6 Kolom
+              </button>
             </div>
 
             <!-- Column Add/Remove -->
@@ -677,7 +701,7 @@ const customCol2 = computed({
               </span>
               <button
                 @click="addBuilderColumn"
-                :disabled="builderHeaders.length >= 4"
+                :disabled="builderHeaders.length >= 6"
                 class="liquid-glass-btn px-2.5 py-1 rounded-lg text-[11px] font-semibold text-slate-600 dark:text-slate-300 disabled:opacity-40"
                 title="Tambah kolom"
               >

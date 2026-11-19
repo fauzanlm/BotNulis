@@ -24,9 +24,10 @@ export function isTableSeparatorLine(tokens: RenderToken[]): boolean {
 }
 
 /**
- * Parse in-text column ratio directives like [kolom: 15, 35, 50] or [columns: 1, 2, 2]
+ * Parse in-text column ratio directives like [kolom: 15, 35, 50] or [columns: 8, 22, 18, 24, 13, 15]
+ * Supports 2 to 8 columns flexibly.
  */
-export function parseColumnDirective(lineText: string): [number, number, number] | null {
+export function parseColumnDirective(lineText: string): number[] | null {
   const match = lineText.trim().match(/^\[(?:kolom|columns|table):\s*([0-9.,\s]+)\]$/i);
   if (!match) return null;
 
@@ -35,14 +36,10 @@ export function parseColumnDirective(lineText: string): [number, number, number]
     .map((v) => parseFloat(v))
     .filter((v) => !isNaN(v) && v > 0);
 
-  if (rawValues.length === 3) {
-    const sum = rawValues[0] + rawValues[1] + rawValues[2];
+  if (rawValues.length >= 2) {
+    const sum = rawValues.reduce((acc, v) => acc + v, 0);
     if (sum > 0) {
-      return [
-        Number((rawValues[0] / sum).toFixed(3)),
-        Number((rawValues[1] / sum).toFixed(3)),
-        Number((rawValues[2] / sum).toFixed(3)),
-      ];
+      return rawValues.map((v) => Number((v / sum).toFixed(3)));
     }
   }
   return null;

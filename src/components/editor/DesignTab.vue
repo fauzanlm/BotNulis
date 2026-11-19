@@ -12,6 +12,7 @@ import {
   ScanLine,
   Table,
   Columns3,
+  Trash2,
 } from 'lucide-vue-next';
 
 const paperStore = usePaperStore();
@@ -21,14 +22,9 @@ const { loadCustomFontFile, isLoading } = useFontLoader();
 
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const customFontsList = ref<{ family: string; name: string }[]>([]);
-const showScanPhotos = ref(false);
 
 const displayedPapers = computed(() => {
-  if (showScanPhotos.value) {
-    return paperStore.allPapers;
-  }
-  // By default, show only the crisp, sharp HD procedural papers (no blur!)
-  return paperStore.allPapers.filter((p) => !p.id.includes('-foto'));
+  return paperStore.allPapers;
 });
 
 const INK_COLORS = [
@@ -65,63 +61,64 @@ function resetBaseline() {
 
 <template>
   <div class="space-y-5 p-4">
-    <!-- 1. Pilihan Kertas HD (Jernih & Presisi) -->
+    <!-- 1. Pilihan Kertas HD (2 Kertas Master Terpilih) -->
     <div class="space-y-2">
       <div class="flex items-center justify-between">
         <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          Template Kertas (HD Crisp)
+          Template Kertas Pilihan
         </label>
-        <div class="flex items-center gap-1.5">
-          <button
-            @click="documentStore.openScanner()"
-            class="liquid-glass-btn px-2 py-0.5 rounded-lg text-[10px] font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1"
-            title="Scan kertas fisik langsung dengan kamera atau upload foto"
-          >
-            <ScanLine class="w-3 h-3" />
-            <span>+ Scan Kertas</span>
-          </button>
-          <button
-            @click="showScanPhotos = !showScanPhotos"
-            class="liquid-glass-btn px-2 py-0.5 rounded-lg text-[10px] font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition"
-          >
-            {{ showScanPhotos ? 'Sembunyikan' : 'Foto' }}
-          </button>
-        </div>
+        <button
+          @click="documentStore.openScanner()"
+          class="liquid-glass-btn px-2.5 py-0.5 rounded-lg text-[10px] font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 shadow-sm"
+          title="Scan kertas fisik langsung dengan kamera atau upload foto"
+        >
+          <ScanLine class="w-3 h-3" />
+          <span>+ Scan / Upload Kertas</span>
+        </button>
       </div>
 
       <!-- Paper Grid -->
       <div class="grid grid-cols-1 gap-2 max-h-56 overflow-y-auto pr-1">
-        <button
+        <div
           v-for="paper in displayedPapers"
           :key="paper.id"
-          @click="paperStore.setPaper(paper.id)"
-          :class="[
-            'liquid-glass-card flex items-center justify-between p-2.5 rounded-2xl text-left transition relative',
-            paperStore.currentPaperId === paper.id
-              ? 'border-blue-500/80 bg-blue-500/15 dark:bg-blue-500/20 ring-1 ring-blue-500/40 shadow-sm'
-              : 'hover:border-slate-300 dark:hover:border-white/20',
-          ]"
+          class="group relative flex items-center"
         >
-          <div class="flex items-center gap-2.5">
-            <div
-              class="w-7 h-9 rounded-xl border flex items-center justify-center flex-shrink-0 shadow-sm text-[9px] font-bold font-mono"
-              :class="[
-                paper.id.includes('foto')
-                  ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:border-amber-800'
-                  : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:border-blue-800'
-              ]"
-            >
-              {{ paper.id.includes('foto') ? 'SCAN' : 'HD' }}
+          <button
+            @click="paperStore.setPaper(paper.id)"
+            :class="[
+              'liquid-glass-card flex-1 flex items-center justify-between p-2.5 rounded-2xl text-left transition relative',
+              paperStore.currentPaperId === paper.id
+                ? 'border-blue-500/80 bg-blue-500/15 dark:bg-blue-500/20 ring-1 ring-blue-500/40 shadow-sm'
+                : 'hover:border-slate-300 dark:hover:border-white/20',
+            ]"
+          >
+            <div class="flex items-center gap-2.5">
+              <div
+                class="w-7 h-9 rounded-xl border flex items-center justify-center flex-shrink-0 shadow-sm text-[9px] font-bold font-mono bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:border-blue-800"
+              >
+                HD
+              </div>
+              <div>
+                <p class="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">{{ paper.name }}</p>
+                <p class="text-[10px] text-slate-400">
+                  {{ paper.totalLines ? `${paper.totalLines} baris` : 'Format khusus' }} • 100% Presisi Garis
+                </p>
+              </div>
             </div>
-            <div>
-              <p class="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">{{ paper.name }}</p>
-              <p class="text-[10px] text-slate-400">
-                {{ paper.totalLines ? `${paper.totalLines} baris` : 'Format khusus' }} • 100% Presisi Garis
-              </p>
-            </div>
-          </div>
-          <Check v-if="paperStore.currentPaperId === paper.id" class="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-        </button>
+            <Check v-if="paperStore.currentPaperId === paper.id" class="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+          </button>
+
+          <!-- Delete button for custom user papers -->
+          <button
+            v-if="paperStore.customPapers.some((cp) => cp.id === paper.id)"
+            @click.stop="paperStore.removeCustomPaper(paper.id)"
+            class="ml-1 p-1.5 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition opacity-0 group-hover:opacity-100"
+            title="Hapus kertas custom ini"
+          >
+            <Trash2 class="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
     </div>
 
@@ -295,7 +292,7 @@ function resetBaseline() {
             <Columns3 class="w-3.5 h-3.5" />
           </div>
           <span class="text-xs font-bold text-slate-800 dark:text-slate-100">
-            Tata Letak 3 Kolom & Tabel
+            Tata Letak Tabel & Kolom (2–6 Kolom)
           </span>
         </div>
         <button
@@ -309,7 +306,20 @@ function resetBaseline() {
       </div>
 
       <!-- Presets -->
-      <div class="grid grid-cols-3 gap-1.5 pt-0.5">
+      <div class="grid grid-cols-4 gap-1.5 pt-0.5">
+        <button
+          @click="styleStore.setColumnPreset('schedule6')"
+          :class="[
+            'p-2 rounded-xl text-center border transition-all text-[10px]',
+            styleStore.columns.preset === 'schedule6'
+              ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 font-bold shadow-sm'
+              : 'border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-white/50',
+          ]"
+        >
+          <div class="font-bold">6 Kolom</div>
+          <div class="text-[9px] opacity-75">Jadwal</div>
+        </button>
+
         <button
           @click="styleStore.setColumnPreset('vocab')"
           :class="[
@@ -333,7 +343,7 @@ function resetBaseline() {
           ]"
         >
           <div class="font-bold">Seimbang</div>
-          <div class="text-[9px] opacity-75">33:33:34</div>
+          <div class="text-[9px] opacity-75">3 Kolom</div>
         </button>
 
         <button
@@ -346,7 +356,7 @@ function resetBaseline() {
           ]"
         >
           <div class="font-bold">Komparasi</div>
-          <div class="text-[9px] opacity-75">25:37:37</div>
+          <div class="text-[9px] opacity-75">3 Kolom</div>
         </button>
       </div>
 

@@ -44,7 +44,7 @@ const toggleDark = useToggle(isDark);
         <button
           @click="documentStore.openTableModal()"
           class="liquid-glass-btn p-1.5 rounded-xl text-indigo-600 dark:text-indigo-400 hover:text-indigo-700"
-          title="Tabel & 3 Kolom (Import JSON / Buat Tabel)"
+          title="Tabel & Kolom (Import JSON / Buat Tabel 2–6 Kolom)"
         >
           <Table class="w-3.5 h-3.5" />
         </button>

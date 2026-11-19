@@ -93,7 +93,7 @@ Formatkan HANYA dalam bentuk JSON BotNulis yang valid tanpa penjelasan pembuka/p
 
 ### ATURAN & TIPE KONTEN BOTNULIS:
 1. "header": Informasi identitas (nama, nim, kelas, mata_pelajaran, tanggal).
-2. "paper": Pilihan kertas ("sidu-pad-bergaris" [Default], "folio-bergaris-31", "buku-sidu-25", "grid-math-paper", "hvs-polos").
+2. "paper": Pilihan kertas ("folio-sidu-real" [Default], "scan-kertas-0944").
 3. "pages": Array halaman (page 1, page 2, dst) yang membagi isi tugas agar tidak menumpuk.
 4. "content" di setiap halaman dapat berisi:
    - String: Teks paragraf biasa.
@@ -103,9 +103,9 @@ Formatkan HANYA dalam bentuk JSON BotNulis yang valid tanpa penjelasan pembuka/p
      * [merah]kata penting[/merah] untuk tinta pulpen merah.
      * [biru]kata[/biru] untuk tinta pulpen biru.
    - Tabel ("type": "table"):
-     * "headers": Judul kolom (bisa 2 kolom, 3 kolom, atau 4 kolom).
-     * "ratios": (Opsional) Persentase lebar 3 kolom, misal [15, 35, 50] untuk No-Istilah-Definisi, atau [33, 33, 34] untuk seimbang, atau [25, 37.5, 37.5] untuk komparasi.
-     * "rows": Array baris data [ ["1", "Istilah", "Penjelasan..."], ... ].
+     * "headers": Judul kolom (bisa 2, 3, 4, 5, hingga 6 kolom fleksibel).
+     * "ratios": (Opsional) Persentase lebar tiap kolom, misal 3 kolom [15, 35, 50], atau 6 kolom [8, 22, 18, 24, 13, 15] untuk No | Hari | Waktu | Mapel | Ruang | Pengawas.
+     * "rows": Array baris data dengan jumlah kolom sesuai headers.
 
 ### CONTOH STRUKTUR JSON LENGKAP:
 {
@@ -116,7 +116,7 @@ Formatkan HANYA dalam bentuk JSON BotNulis yang valid tanpa penjelasan pembuka/p
     "mata_pelajaran": "Nama Mata Pelajaran",
     "tanggal": "${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}"
   },
-  "paper": "sidu-pad-bergaris",
+  "paper": "folio-sidu-real",
   "pages": [
     {
       "page": 1,
@@ -178,20 +178,67 @@ export const SAMPLE_AI_DOCUMENTS = [
                 headers: ['No', 'Organel Sel', 'Fungsi Utama Seluler'],
                 rows: [
                   ['1', 'Mitokondria', 'Pusat respirasi seluler dan produsen utama energi ATP.'],
-                  ['2', 'Ribosom', 'Sintesis rantai polipeptida dan perakitan molekul protein.'],
-                  ['3', 'Retikulum Endoplasma', 'Transportasi protein intrasel dan sintesis senyawa lipid.'],
-                  ['4', 'Badan Golgi', 'Modifikasi, pemilahan, dan sekresi glikoprotein ke luar sel.'],
+                  ['2', 'Ribosom', 'Tempat translasi dan sintesis rantai polipeptida protein.'],
+                  ['3', 'Retikulum Endoplasma', 'Jalur transportasi dan modifikasi biomolekul intraseluler.'],
+                  ['4', 'Badan Golgi', 'Penyortiran, pengemasan, dan sekresi glikoprotein.'],
+                  ['5', 'Kloroplas', 'Organel fotosintesis pengubah energi surya menjadi glukosa pada tumbuhan.'],
                 ],
               },
+              'Keberadaan dinding sel dan vakuola sentral yang besar membedakan sel tumbuhan dari sel hewan secara anatomis.',
             ],
           },
           {
             page: 2,
             title: 'ANALISIS PERBEDAAN DAN KESIMPULAN',
             content: [
-              'Perbedaan mendasar antara sel tumbuhan dan sel hewan terletak pada keberadaan dinding sel selulosa, kloroplas untuk fotosintesis, serta vakuola sentral berukuran besar.',
-              'Sel hewan memiliki sentriol yang berperan aktif dalam pembelahan mitosis, sedangkan sel tumbuhan tidak memilikinya.',
-              'Kesimpulannya, diferensiasi struktur seluler ini memungkinkan tumbuhan berdiri kokoh dan memproduksi energi mandiri secara autotrof.',
+              'Perbedaan mendasar antara sel prokariotik dan eukariotik terletak pada ada tidaknya membran inti (karioteka).',
+              'Sel hewan tidak memiliki plastida sehingga bersifat heterotrof, sedangkan sel tumbuhan bersifat autotrof.',
+              '==Kesimpulan Tugas:== Seluruh organel bekerja secara sinergis menjaga homeostasis dan kelangsungan hidup organisme.',
+              '[merah]Catatan Guru:[/merah] Tugas telah diperiksa, nilai kelengkapan materi dan kerapian 100.',
+            ],
+          },
+        ],
+      },
+      null,
+      2
+    ),
+  },
+  {
+    id: 'ai-exam-schedule-6cols',
+    title: 'Jadwal Asesmen Ujian & Pengawas (Tabel 6 Kolom)',
+    description: 'Format jadwal rapi 6 kolom: No, Hari/Tgl, Jam, Mapel, Ruang, Pengawas',
+    json: JSON.stringify(
+      {
+        header: {
+          nama: 'Panitia Asesmen Semester',
+          nim: 'PAN-2026-X',
+          kelas: 'Tahun Ajaran 2026/2027',
+          mata_pelajaran: 'Jadwal Asesmen Akhir',
+          tanggal: '20/11/2026',
+        },
+        paper: 'folio-sidu-real',
+        font: 'PatrickHand',
+        inkColor: '#1b3b6f',
+        pages: [
+          {
+            page: 1,
+            title: 'JADWAL ASESMEN AKHIR SEMESTER & PENGAWAS RUANG',
+            content: [
+              'Berikut adalah rekapitulasi jadwal pelaksanaan asesmen akhir semester beserta penugasan pengawas ruangan ujian:',
+              {
+                type: 'table',
+                ratios: [8, 22, 18, 24, 13, 15],
+                headers: ['No', 'Hari / Tanggal', 'Waktu', 'Mata Pelajaran', 'Ruang', 'Pengawas'],
+                rows: [
+                  ['1', 'Senin, 20 Nov', '07.30 - 09.30', 'Matematika Wajib', 'R. 101', 'Bpk. Hendra, M.Pd'],
+                  ['2', 'Senin, 20 Nov', '10.00 - 11.30', 'Bahasa Indonesia', 'R. 101', 'Ibu Siti Aminah, S.Pd'],
+                  ['3', 'Selasa, 21 Nov', '07.30 - 09.30', 'Fisika Terapan', 'R. 104', 'Bpk. Joko Susilo, M.Sc'],
+                  ['4', 'Selasa, 21 Nov', '10.00 - 11.30', 'Kimia Organik', 'R. 104', 'Ibu Ratna Dewi, S.Si'],
+                  ['5', 'Rabu, 22 Nov', '07.30 - 09.30', 'Biologi Seluler', 'R. 102', 'Bpk. Agus Salim, M.Bio'],
+                  ['6', 'Kamis, 23 Nov', '07.30 - 09.30', 'Bahasa Inggris', 'R. 103', 'Miss Diana Ross, M.Ed'],
+                ],
+              },
+              '==Catatan Tata Tertib:== Peserta wajib hadir 15 menit sebelum bel masuk berbunyi. Dilarang membawa gadget atau catatan dalam bentuk apa pun ke dalam ruangan ujian.',
             ],
           },
         ],
@@ -271,7 +318,7 @@ function formatContentItem(item: AiPageContentItem): string {
         detectedFormat: 'array_of_arrays',
       };
       let output = convertTableToColumnText(parsedTable);
-      if (Array.isArray(tableItem.ratios) && tableItem.ratios.length === 3) {
+      if (Array.isArray(tableItem.ratios) && tableItem.ratios.length >= 2) {
         output = `[kolom: ${tableItem.ratios.join(', ')}]\n${output}`;
       }
       return output;

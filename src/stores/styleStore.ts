@@ -12,10 +12,11 @@ export type PresetProfileKey =
   | 'kamera_malam'
   | 'scan_bersih';
 
-export const COLUMN_PRESET_RATIOS: Record<ColumnPresetKey, [number, number, number]> = {
+export const COLUMN_PRESET_RATIOS: Record<ColumnPresetKey, number[]> = {
   vocab: [0.15, 0.35, 0.5],
   equal: [0.333, 0.333, 0.334],
   comparison: [0.25, 0.375, 0.375],
+  schedule6: [0.08, 0.22, 0.18, 0.24, 0.13, 0.15],
   custom: [0.2, 0.4, 0.4],
 };
 
@@ -63,18 +64,14 @@ export const useStyleStore = defineStore(
     function setColumnPreset(preset: ColumnPresetKey) {
       columns.value.preset = preset;
       if (preset in COLUMN_PRESET_RATIOS) {
-        columns.value.ratios = [...COLUMN_PRESET_RATIOS[preset]] as [number, number, number];
+        columns.value.ratios = [...COLUMN_PRESET_RATIOS[preset]];
       }
     }
 
-    function setColumnRatios(ratios: [number, number, number]) {
-      const sum = ratios[0] + ratios[1] + ratios[2];
+    function setColumnRatios(ratios: number[]) {
+      const sum = ratios.reduce((acc, v) => acc + v, 0);
       if (sum > 0) {
-        columns.value.ratios = [
-          Number((ratios[0] / sum).toFixed(3)),
-          Number((ratios[1] / sum).toFixed(3)),
-          Number((ratios[2] / sum).toFixed(3)),
-        ];
+        columns.value.ratios = ratios.map((v) => Number((v / sum).toFixed(3)));
       }
       columns.value.preset = 'custom';
     }
