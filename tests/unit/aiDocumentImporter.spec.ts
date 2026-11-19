@@ -21,8 +21,8 @@ describe('aiDocumentImporter', () => {
     expect(result.header).toBeDefined();
     expect(result.header!.name).toBe('Budi Santoso (0112524027 - XII MIPA 2)');
     expect(result.header!.subject).toBe('Biologi Sel & Genetika');
-    expect(result.paperId).toBe('folio-bergaris-31');
-    expect(result.fontFamily).toBe('PatrickHand');
+    expect(result.paperId).toBe('folio-sidu-ungu');
+    expect(result.fontFamily).toBe('Font_Standard1');
     expect(result.inkColor).toBe('#1b3b6f');
   });
 

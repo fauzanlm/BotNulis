@@ -93,10 +93,12 @@ Formatkan HANYA dalam bentuk JSON BotNulis yang valid tanpa penjelasan pembuka/p
 
 ### ATURAN & TIPE KONTEN BOTNULIS:
 1. "header": Informasi identitas (nama, nim, kelas, mata_pelajaran, tanggal).
-2. "paper": Pilihan kertas ("folio-sidu-real" [Default], "scan-kertas-0944").
-3. "pages": Array halaman (page 1, page 2, dst) yang membagi isi tugas agar tidak menumpuk.
-4. "content" di setiap halaman dapat berisi:
+2. "paper": Pilihan kertas ("folio-sidu-ungu" [Garis Ungu Asli SiDU], "folio-sidu-real" [Foto Asli HD], "scan-kertas-0944" [Scan 28 Baris]).
+3. "font": Pilihan font tulisan tangan ("Font_Standard1" [Tulisan Siswa Asli - Sangat Direkomendasikan], "Font_Standard2" [Tugas Siswa Rapi], "Tom_Hand" [Cakar Ayam Cowok], "Kalam" [Pena Gel]).
+4. "pages": Array halaman (page 1, page 2, dst) yang membagi isi tugas agar tidak menumpuk.
+5. "content" di setiap halaman dapat berisi:
    - String: Teks paragraf biasa.
+   - Rumus Matematika: akar((25 + 1 + 9 + 9) / 4) atau sqrt(...) atau √(x + y) yang otomatis digambar dengan tanda akar & atap vinckulum pulpen asli.
    - Markup Tulisan Alami:
      * ~~kata yang dicoret~~ untuk efek coretan pulpen alami seperti salah tulis.
      * ==kata stabilo== untuk efek highlighter stabilo kuning cerah.
@@ -116,7 +118,8 @@ Formatkan HANYA dalam bentuk JSON BotNulis yang valid tanpa penjelasan pembuka/p
     "mata_pelajaran": "Nama Mata Pelajaran",
     "tanggal": "${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}"
   },
-  "paper": "folio-sidu-real",
+  "paper": "folio-sidu-ungu",
+  "font": "Font_Standard1",
   "pages": [
     {
       "page": 1,
@@ -163,8 +166,8 @@ export const SAMPLE_AI_DOCUMENTS = [
           mata_pelajaran: 'Biologi Sel & Genetika',
           tanggal: '06/11/2026',
         },
-        paper: 'folio-bergaris-31',
-        font: 'PatrickHand',
+        paper: 'folio-sidu-ungu',
+        font: 'Font_Standard1',
         inkColor: '#1b3b6f',
         pages: [
           {
@@ -217,7 +220,7 @@ export const SAMPLE_AI_DOCUMENTS = [
           tanggal: '20/11/2026',
         },
         paper: 'folio-sidu-real',
-        font: 'PatrickHand',
+        font: 'Font_Standard1',
         inkColor: '#1b3b6f',
         pages: [
           {

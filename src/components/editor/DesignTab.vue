@@ -22,6 +22,23 @@ const { loadCustomFontFile, isLoading } = useFontLoader();
 
 const fileInputRef = ref<HTMLInputElement | null>(null);
 const customFontsList = ref<{ family: string; name: string }[]>([]);
+const selectedFontCategory = ref<'all' | 'authentic' | 'cursive' | 'neat'>('all');
+
+const filteredFonts = computed(() => {
+  if (selectedFontCategory.value === 'all') {
+    return FONT_PRESETS;
+  }
+  if (selectedFontCategory.value === 'authentic') {
+    return FONT_PRESETS.filter((f) => f.category === 'authentic');
+  }
+  if (selectedFontCategory.value === 'cursive') {
+    return FONT_PRESETS.filter((f) => f.category === 'cursive');
+  }
+  if (selectedFontCategory.value === 'neat') {
+    return FONT_PRESETS.filter((f) => f.category === 'neat' || f.category === 'aesthetic');
+  }
+  return FONT_PRESETS;
+});
 
 const displayedPapers = computed(() => {
   return paperStore.allPapers;
@@ -147,10 +164,62 @@ function resetBaseline() {
         </div>
       </div>
 
+      <!-- Font Category Tabs -->
+      <div class="flex items-center gap-1 p-0.5 rounded-xl bg-slate-200/50 dark:bg-white/5 text-[11px] font-semibold">
+        <button
+          type="button"
+          @click="selectedFontCategory = 'all'"
+          :class="[
+            'px-2 py-1 rounded-lg transition text-[10px]',
+            selectedFontCategory === 'all'
+              ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-xs font-bold'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900',
+          ]"
+        >
+          Semua ({{ FONT_PRESETS.length }})
+        </button>
+        <button
+          type="button"
+          @click="selectedFontCategory = 'authentic'"
+          :class="[
+            'px-2 py-1 rounded-lg transition flex items-center gap-1 text-[10px]',
+            selectedFontCategory === 'authentic'
+              ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-xs font-bold'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900',
+          ]"
+        >
+          <span>⭐ Asli Siswa</span>
+        </button>
+        <button
+          type="button"
+          @click="selectedFontCategory = 'cursive'"
+          :class="[
+            'px-2 py-1 rounded-lg transition text-[10px]',
+            selectedFontCategory === 'cursive'
+              ? 'bg-white dark:bg-slate-800 text-purple-600 dark:text-purple-400 shadow-xs font-bold'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900',
+          ]"
+        >
+          ✍️ Sambung
+        </button>
+        <button
+          type="button"
+          @click="selectedFontCategory = 'neat'"
+          :class="[
+            'px-2 py-1 rounded-lg transition text-[10px]',
+            selectedFontCategory === 'neat'
+              ? 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 shadow-xs font-bold'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900',
+          ]"
+        >
+          💻 Komputer
+        </button>
+      </div>
+
       <!-- Font List with Live Previews -->
       <div class="space-y-1.5 max-h-56 overflow-y-auto pr-1">
         <button
-          v-for="font in FONT_PRESETS"
+          v-for="font in filteredFonts"
           :key="font.id"
           @click="selectFont(font)"
           :class="[
@@ -161,8 +230,23 @@ function resetBaseline() {
           ]"
         >
           <div class="flex items-center justify-between w-full">
-            <span class="text-xs font-semibold text-slate-900 dark:text-slate-100">{{ font.name }}</span>
-            <Check v-if="styleStore.typography.fontFamily === font.family" class="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">{{ font.name }}</span>
+              <span
+                v-if="font.badge"
+                :class="[
+                  'px-1.5 py-0.5 rounded-md text-[9px] font-bold flex-shrink-0',
+                  font.category === 'authentic'
+                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800'
+                    : font.category === 'cursive'
+                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-950/80 dark:text-purple-300'
+                      : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+                ]"
+              >
+                {{ font.badge }}
+              </span>
+            </div>
+            <Check v-if="styleStore.typography.fontFamily === font.family" class="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 ml-1" />
           </div>
 
           <!-- Live Handwriting Sample -->

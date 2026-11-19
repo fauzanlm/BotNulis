@@ -1,11 +1,22 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import EditorSidebar from '@/components/editor/EditorSidebar.vue';
 import CanvasViewport from '@/components/preview/CanvasViewport.vue';
 import DocumentScannerModal from '@/components/scanner/DocumentScannerModal.vue';
 import TableManagerModal from '@/components/modals/TableManagerModal.vue';
 import { useDocumentStore } from '@/stores/documentStore';
+import { useStyleStore } from '@/stores/styleStore';
 
 const documentStore = useDocumentStore();
+const styleStore = useStyleStore();
+
+onMounted(() => {
+  // Upgrade any legacy cached PatrickHand font to authentic Indonesian student handwriting
+  if (styleStore.typography.fontFamily === 'PatrickHand') {
+    styleStore.typography.fontFamily = 'Font_Standard1';
+    styleStore.typography.fontSize = 52;
+  }
+});
 </script>
 
 <template>

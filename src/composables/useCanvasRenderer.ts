@@ -422,6 +422,20 @@ export function useCanvasRenderer() {
             typography.fontSize,
             ctx.fillStyle as string
           );
+        } else if (
+          _humanizer &&
+          _humanizer.enabled &&
+          (_humanizer.baselineJitter > 0 || _humanizer.rotationJitter > 0) &&
+          word.text.length > 1
+        ) {
+          drawOrganicWord(
+            ctx,
+            word.text,
+            word.width,
+            typography,
+            _humanizer,
+            word.wordIndex
+          );
         } else {
           ctx.fillText(word.text, 0, 0);
         }
@@ -558,6 +572,102 @@ export function useCanvasRenderer() {
     ctx.fillText(innerText, radicalWidth, 0);
 
     ctx.restore();
+  }
+
+  /**
+   * Deterministic pseudo-random number generator for character-level human variations
+   */
+  function charPseudoRandom(seed: number, charIdx: number, charCode: number, salt: number): number {
+    let h = (seed * 374761393 + charIdx * 668265263 + charCode * 1274126177 + salt * 31) >>> 0;
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    return ((h ^ (h >>> 16)) >>> 0) / 4294967296; // Returns 0.0 to 1.0
+  }
+
+  /**
+   * Draw handwritten words character-by-character with organic micro-imperfections:
+   * subtle baseline jitter, character micro-tilt, ink pressure variance, and dynamic tracking.
+   * This completely eliminates the artificial computer-straight baseline and vector uniformity.
+   */
+  function drawOrganicWord(
+    ctx: CanvasRenderingContext2D,
+    text: string,
+    allocatedWidth: number,
+    typography: TypographyConfig,
+    humanizer: HumanizerConfig,
+    wordIndex: number
+  ) {
+    if (
+      !humanizer ||
+      !humanizer.enabled ||
+      text.length <= 1 ||
+      (humanizer.baselineJitter <= 0.05 && humanizer.rotationJitter <= 0.05)
+    ) {
+      ctx.fillText(text, 0, 0);
+      return;
+    }
+
+    const chars = Array.from(text);
+    const n = chars.length;
+
+    // Detect cursive script fonts where stroke connections should remain intact
+    const isCursive = typography.fontFamily === 'MarckScript' || typography.fontFamily === 'BadScript';
+    const damping = isCursive ? 0.35 : 1.0;
+
+    // Measure character widths to calculate accurate horizontal advance
+    const charWidths: number[] = new Array(n);
+    let sumMeasured = 0;
+    for (let i = 0; i < n; i++) {
+      const w = ctx.measureText(chars[i]).width;
+      charWidths[i] = w;
+      sumMeasured += w;
+    }
+
+    // Width scale to guarantee word aligns accurately with layout bounding box
+    const widthScale = allocatedWidth > 0 && sumMeasured > 0 ? allocatedWidth / sumMeasured : 1.0;
+
+    // Max micro-jitter bounds (scaled to font size for natural realism)
+    const maxJitterY = Math.min(1.4, typography.fontSize * 0.024) * humanizer.baselineJitter * damping;
+    const maxRotation = ((1.5 * Math.PI) / 180) * humanizer.rotationJitter * damping;
+    const originalAlpha = ctx.globalAlpha;
+
+    let curX = 0;
+
+    for (let i = 0; i < n; i++) {
+      const ch = chars[i];
+      const code = ch.charCodeAt(0) || 32;
+      const w = charWidths[i];
+
+      // Calculate character-level human variations
+      const rJitterY = charPseudoRandom(wordIndex, i, code, 1);
+      const rRot = charPseudoRandom(wordIndex, i, code, 2);
+      const rScale = charPseudoRandom(wordIndex, i, code, 3);
+      const rAlpha = charPseudoRandom(wordIndex, i, code, 4);
+      const rSpace = charPseudoRandom(wordIndex, i, code, 5);
+
+      const jitterY = (rJitterY - 0.5) * 2 * maxJitterY;
+      const charRot = (rRot - 0.5) * 2 * maxRotation;
+      const charScale = 1 + (rScale - 0.5) * 0.04 * humanizer.baselineJitter * damping;
+      const charAlpha = originalAlpha * (1 - rAlpha * 0.12 * humanizer.inkPressureVariance);
+
+      ctx.save();
+      // Translate to character center so rotation and scale occur around center rather than corner
+      ctx.translate(curX + w * 0.5, jitterY);
+      if (Math.abs(charRot) > 0.001) {
+        ctx.rotate(charRot);
+      }
+      if (Math.abs(charScale - 1) > 0.003) {
+        ctx.scale(charScale, charScale);
+      }
+      ctx.globalAlpha = charAlpha;
+      ctx.textAlign = 'center';
+      ctx.fillText(ch, 0, 0);
+      ctx.restore();
+
+      // Advance X with subtle tracking micro-jitter
+      const trackingVariance = (rSpace - 0.5) * 0.08 * humanizer.spacingJitter * damping;
+      const advanceX = w * widthScale * (1 + trackingVariance);
+      curX += advanceX;
+    }
   }
 
   return {

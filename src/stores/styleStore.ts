@@ -24,8 +24,8 @@ export const useStyleStore = defineStore(
   'style',
   () => {
     const typography = ref<TypographyConfig>({
-      fontFamily: 'PatrickHand', // Default to ultra-neat font
-      fontSize: 50,
+      fontFamily: 'Font_Standard1', // Default to authentic Indonesian student handwriting
+      fontSize: 52,
       color: '#1b3b6f', // Deep pilot navy ink
       lineHeightScale: 1.0,
       letterSpacing: 1.0,
@@ -33,11 +33,17 @@ export const useStyleStore = defineStore(
       baselineOffset: -4,
     });
 
+    // Auto-migrate legacy 'PatrickHand' (which users find looks artificial / like AI) to authentic handwriting
+    if (typography.value.fontFamily === 'PatrickHand') {
+      typography.value.fontFamily = 'Font_Standard1';
+      typography.value.fontSize = 52;
+    }
+
     const humanizer = ref<HumanizerConfig>({
       enabled: true,
-      baselineJitter: 0.3,       // subtle neat bounce
-      rotationJitter: 0.2,       // subtle tilt
-      spacingJitter: 0.25,       // consistent word gaps
+      baselineJitter: 0.35,      // natural organic bounce
+      rotationJitter: 0.25,      // natural character micro-tilt
+      spacingJitter: 0.25,       // natural word gaps
       marginDrift: 0.2,          // disciplined straight margin
       inkPressureVariance: 0.4,  // natural ink saturation
       strikethroughStyle: 'scratch',
@@ -83,12 +89,12 @@ export const useStyleStore = defineStore(
     // Preset Profiles
     function applyPreset(name: PresetProfileKey) {
       if (name === 'sangat_rapi') {
-        typography.value.fontFamily = 'PatrickHand';
-        typography.value.fontSize = 50;
+        typography.value.fontFamily = 'Font_Standard1';
+        typography.value.fontSize = 52;
         typography.value.color = '#1b3b6f'; // Biru Pilot
         typography.value.baselineOffset = -4;
-        humanizer.value.baselineJitter = 0.25;
-        humanizer.value.rotationJitter = 0.18;
+        humanizer.value.baselineJitter = 0.3;
+        humanizer.value.rotationJitter = 0.2;
         humanizer.value.spacingJitter = 0.25;
         humanizer.value.marginDrift = 0.2;
         humanizer.value.inkPressureVariance = 0.35;
@@ -97,12 +103,12 @@ export const useStyleStore = defineStore(
         realism.value.lightingTemperature = 'warm_lamp';
         realism.value.lightingWarmth = 0.2;
       } else if (name === 'estetik_study') {
-        typography.value.fontFamily = 'Mali';
-        typography.value.fontSize = 48;
+        typography.value.fontFamily = 'Kalam';
+        typography.value.fontSize = 50;
         typography.value.color = '#1b263b';
-        typography.value.baselineOffset = -5;
-        humanizer.value.baselineJitter = 0.3;
-        humanizer.value.rotationJitter = 0.2;
+        typography.value.baselineOffset = -4;
+        humanizer.value.baselineJitter = 0.35;
+        humanizer.value.rotationJitter = 0.25;
         humanizer.value.spacingJitter = 0.3;
         humanizer.value.marginDrift = 0.2;
         realism.value.shadowType = 'phone_top';
@@ -111,7 +117,7 @@ export const useStyleStore = defineStore(
         realism.value.lightingWarmth = 0.35;
       } else if (name === 'arsitek_presisi') {
         typography.value.fontFamily = 'ArchitectsDaughter';
-        typography.value.fontSize = 46;
+        typography.value.fontSize = 48;
         typography.value.color = '#111827';
         typography.value.baselineOffset = -4;
         humanizer.value.baselineJitter = 0.15;
@@ -127,31 +133,31 @@ export const useStyleStore = defineStore(
         typography.value.fontSize = 54;
         typography.value.color = '#1b3b6f';
         typography.value.baselineOffset = -6;
-        humanizer.value.baselineJitter = 0.35;
-        humanizer.value.rotationJitter = 0.25;
-        humanizer.value.spacingJitter = 0.3;
-        humanizer.value.marginDrift = 0.25;
+        humanizer.value.baselineJitter = 0.25;
+        humanizer.value.rotationJitter = 0.2;
+        humanizer.value.spacingJitter = 0.25;
+        humanizer.value.marginDrift = 0.2;
       } else if (name === 'pelajar_rapi') {
-        typography.value.fontFamily = 'Font_Standard1';
+        typography.value.fontFamily = 'Font_Standard2';
         typography.value.fontSize = 52;
         typography.value.color = '#1b263b';
-        typography.value.baselineOffset = -6;
-        humanizer.value.baselineJitter = 0.3;
-        humanizer.value.rotationJitter = 0.2;
+        typography.value.baselineOffset = -4;
+        humanizer.value.baselineJitter = 0.35;
+        humanizer.value.rotationJitter = 0.25;
         humanizer.value.spacingJitter = 0.3;
         humanizer.value.marginDrift = 0.25;
         realism.value.shadowType = 'phone_top';
         realism.value.shadowIntensity = 0.25;
         realism.value.lightingTemperature = 'warm_lamp';
       } else if (name === 'cakar_ayam') {
-        typography.value.fontFamily = 'Ugly_Handwriting';
-        typography.value.fontSize = 58;
+        typography.value.fontFamily = 'Tom_Hand';
+        typography.value.fontSize = 54;
         typography.value.color = '#111827';
-        typography.value.baselineOffset = -6;
-        humanizer.value.baselineJitter = 0.75;
-        humanizer.value.rotationJitter = 0.65;
-        humanizer.value.spacingJitter = 0.6;
-        humanizer.value.marginDrift = 0.6;
+        typography.value.baselineOffset = -4;
+        humanizer.value.baselineJitter = 0.6;
+        humanizer.value.rotationJitter = 0.5;
+        humanizer.value.spacingJitter = 0.5;
+        humanizer.value.marginDrift = 0.4;
       } else if (name === 'kamera_malam') {
         realism.value.enabled = true;
         realism.value.shadowType = 'phone_top';
