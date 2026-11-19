@@ -2,6 +2,26 @@ import type { PaperTemplate } from '@/types/paper';
 
 export const PAPER_PRESETS: PaperTemplate[] = [
   {
+    id: 'folio-sidu-ungu',
+    name: 'Double Folio SiDU Ungu (38 Baris Asli)',
+    category: 'folio',
+    imageUrl: '/assets/papers/folio_sidu_ungu_hd.png',
+    width: 2112,
+    height: 3210,
+    marginTop: 372,
+    marginBottom: 2964,
+    marginLeft: 90,
+    marginRight: 2028,
+    lineHeight: 70,
+    baselineOffset: -6,
+    totalLines: 38,
+    headerFields: {
+      name: { x: 90, y: 150, label: 'Nama / NIM' },
+      date: { x: 1550, y: 150, label: 'Tanggal' },
+      pageNumber: { x: 1850, y: 150, label: 'No' },
+    },
+  },
+  {
     id: 'folio-sidu-real',
     name: 'Double Folio SiDU Real (Foto Asli HD 38 Baris)',
     category: 'folio',

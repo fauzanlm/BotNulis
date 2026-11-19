@@ -9,15 +9,19 @@ import type { TypographyConfig, HumanizerConfig, ColumnConfig } from '@/types/st
 import type { RenderToken } from '@/types/canvas';
 
 describe('6-Column Layout & Curated Papers Specification', () => {
-  it('PAPER_PRESETS contains exactly the 2 papers requested by the user', () => {
-    expect(PAPER_PRESETS.length).toBe(2);
-    expect(PAPER_PRESETS[0].id).toBe('folio-sidu-real');
-    expect(PAPER_PRESETS[0].name).toContain('Double Folio SiDU Real');
+  it('PAPER_PRESETS contains the curated master papers including SiDU Ungu', () => {
+    expect(PAPER_PRESETS.length).toBe(3);
+    expect(PAPER_PRESETS[0].id).toBe('folio-sidu-ungu');
+    expect(PAPER_PRESETS[0].name).toContain('Double Folio SiDU Ungu');
     expect(PAPER_PRESETS[0].totalLines).toBe(38);
 
-    expect(PAPER_PRESETS[1].id).toBe('scan-kertas-0944');
-    expect(PAPER_PRESETS[1].name).toBe('Scan Kertas (09.44)');
-    expect(PAPER_PRESETS[1].totalLines).toBe(28);
+    expect(PAPER_PRESETS[1].id).toBe('folio-sidu-real');
+    expect(PAPER_PRESETS[1].name).toContain('Double Folio SiDU Real');
+    expect(PAPER_PRESETS[1].totalLines).toBe(38);
+
+    expect(PAPER_PRESETS[2].id).toBe('scan-kertas-0944');
+    expect(PAPER_PRESETS[2].name).toBe('Scan Kertas (09.44)');
+    expect(PAPER_PRESETS[2].totalLines).toBe(28);
   });
 
   it('parses in-text column directive with 6 ratios', () => {
