@@ -414,7 +414,17 @@ export function useCanvasRenderer() {
         ctx.font = `${typography.fontSize}px "${typography.fontFamily}", cursive, sans-serif`;
         ctx.textBaseline = 'alphabetic';
 
-        ctx.fillText(word.text, 0, 0);
+        if (word.isRoot && word.rootContent) {
+          drawHandwrittenSquareRoot(
+            ctx,
+            word.rootContent,
+            word.width,
+            typography.fontSize,
+            ctx.fillStyle as string
+          );
+        } else {
+          ctx.fillText(word.text, 0, 0);
+        }
 
         // 3c. Draw Strikethrough Scribble
         if (word.isStrikethrough) {
@@ -504,6 +514,48 @@ export function useCanvasRenderer() {
       ctx.fillStyle = vigGrad;
       ctx.fillRect(0, 0, width, height);
     }
+
+    ctx.restore();
+  }
+
+  /**
+   * Draw an organic handwritten square root symbol (radical + vinculum roof) covering mathematical expressions
+   */
+  function drawHandwrittenSquareRoot(
+    ctx: CanvasRenderingContext2D,
+    innerText: string,
+    totalWidth: number,
+    fontSize: number,
+    inkColor: string
+  ) {
+    ctx.save();
+    ctx.strokeStyle = inkColor;
+    ctx.fillStyle = inkColor;
+    ctx.lineWidth = Math.max(1.8, fontSize * 0.045);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    const radicalWidth = fontSize * 0.42;
+    const roofY = -fontSize * 0.82;
+    const bottomDipY = fontSize * 0.08;
+    const startY = -fontSize * 0.28;
+
+    // 1. Draw handwritten radical sign with vinculum (roof)
+    ctx.beginPath();
+    // Starter up-tick on the left
+    ctx.moveTo(2, startY);
+    // Dip down to base of radical
+    ctx.lineTo(fontSize * 0.12, bottomDipY);
+    // Sharp ascent to radical peak
+    ctx.lineTo(radicalWidth - 4, roofY);
+    // Horizontal roof covering the whole expression
+    ctx.lineTo(totalWidth - 2, roofY);
+    // Small natural downward hook at the right edge
+    ctx.lineTo(totalWidth - 2, roofY + fontSize * 0.10);
+    ctx.stroke();
+
+    // 2. Render inner expression text underneath the roof
+    ctx.fillText(innerText, radicalWidth, 0);
 
     ctx.restore();
   }

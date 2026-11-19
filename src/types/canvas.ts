@@ -1,4 +1,4 @@
-export type TokenType = 'word' | 'strikethrough' | 'space' | 'newline' | 'color' | 'highlight';
+export type TokenType = 'word' | 'strikethrough' | 'space' | 'newline' | 'color' | 'highlight' | 'root';
 
 export interface RenderToken {
   type: TokenType;
@@ -8,6 +8,8 @@ export interface RenderToken {
   isStrikethrough?: boolean;
   isHighlight?: boolean;
   highlightColor?: string;
+  isRoot?: boolean;
+  rootContent?: string;
 }
 
 export interface RenderWord {
@@ -19,6 +21,8 @@ export interface RenderWord {
   isStrikethrough: boolean;
   isHighlight: boolean;
   highlightColor?: string;
+  isRoot?: boolean;
+  rootContent?: string;
   rotation: number;
   jitterY: number;
   alpha: number;

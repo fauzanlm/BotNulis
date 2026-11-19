@@ -373,6 +373,15 @@ const wordCount = computed(() => {
             <Table class="w-3 h-3 text-indigo-500" />
             <span>| Kolom</span>
           </button>
+
+          <button
+            @click="insertTag('akar(', ')')"
+            class="liquid-glass-btn inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-xl text-emerald-600 dark:text-emerald-400 border-emerald-300/40"
+            title="Simbol Akar Matematika Tulisan Tangan: akar(...) atau sqrt(...)"
+          >
+            <span class="font-serif font-bold text-xs">√</span>
+            <span>Akar</span>
+          </button>
         </div>
 
         <!-- Clean Text Buttons -->

@@ -176,8 +176,16 @@ export function usePagination() {
                   continue;
                 }
 
-                const rawWidth = measureCtx.measureText(token.text).width;
-                const wordWidth = rawWidth * (typography.letterSpacing || 1);
+                let wordWidth: number;
+                if (token.isRoot && token.rootContent) {
+                  const rawInnerWidth = measureCtx.measureText(token.rootContent).width;
+                  const innerWidth = rawInnerWidth * (typography.letterSpacing || 1);
+                  const radicalLeftWidth = typography.fontSize * 0.42;
+                  wordWidth = radicalLeftWidth + innerWidth + 10;
+                } else {
+                  const rawWidth = measureCtx.measureText(token.text).width;
+                  wordWidth = rawWidth * (typography.letterSpacing || 1);
+                }
 
                 const jitter = getWordJitter(
                   currentPageIndex,
@@ -196,6 +204,8 @@ export function usePagination() {
                   isStrikethrough: !!token.isStrikethrough,
                   isHighlight: !!token.isHighlight,
                   highlightColor: token.highlightColor,
+                  isRoot: !!token.isRoot,
+                  rootContent: token.rootContent,
                   rotation: jitter.rotation,
                   jitterY: jitter.jitterY,
                   alpha: jitter.alpha,
@@ -242,8 +252,16 @@ export function usePagination() {
         }
 
         // Measure word width
-        const rawWidth = measureCtx.measureText(token.text).width;
-        const wordWidth = rawWidth * (typography.letterSpacing || 1);
+        let wordWidth: number;
+        if (token.isRoot && token.rootContent) {
+          const rawInnerWidth = measureCtx.measureText(token.rootContent).width;
+          const innerWidth = rawInnerWidth * (typography.letterSpacing || 1);
+          const radicalLeftWidth = typography.fontSize * 0.42;
+          wordWidth = radicalLeftWidth + innerWidth + 10;
+        } else {
+          const rawWidth = measureCtx.measureText(token.text).width;
+          wordWidth = rawWidth * (typography.letterSpacing || 1);
+        }
 
         // Word wrap check: if word exceeds right margin, wrap to next line
         if (currentX + wordWidth > paper.marginRight && currentLineWords.length > 0) {
@@ -267,6 +285,8 @@ export function usePagination() {
           isStrikethrough: !!token.isStrikethrough,
           isHighlight: !!token.isHighlight,
           highlightColor: token.highlightColor,
+          isRoot: !!token.isRoot,
+          rootContent: token.rootContent,
           rotation: jitter.rotation,
           jitterY: jitter.jitterY,
           alpha: jitter.alpha,

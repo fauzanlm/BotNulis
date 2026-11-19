@@ -1,8 +1,71 @@
 import type { RenderToken } from '@/types/canvas';
 
+interface RootMatch {
+  start: number;
+  end: number;
+  full: string;
+  inner: string;
+}
+
+function findMathRootsInText(text: string): RootMatch[] {
+  const prefixes = [
+    { prefix: 'akar(', close: ')' },
+    { prefix: 'sqrt(', close: ')' },
+    { prefix: '√(', close: ')' },
+    { prefix: '\\sqrt{', close: '}' },
+  ];
+
+  const results: RootMatch[] = [];
+  let i = 0;
+  while (i < text.length) {
+    let matchedPrefix: { prefix: string; close: string } | null = null;
+    for (const p of prefixes) {
+      if (text.startsWith(p.prefix, i)) {
+        matchedPrefix = p;
+        break;
+      }
+    }
+
+    if (matchedPrefix) {
+      const openChar = matchedPrefix.prefix.slice(-1);
+      const closeChar = matchedPrefix.close;
+      let depth = 1;
+      let j = i + matchedPrefix.prefix.length;
+      while (j < text.length && depth > 0) {
+        if (text[j] === openChar) depth++;
+        else if (text[j] === closeChar) depth--;
+        j++;
+      }
+      if (depth === 0) {
+        const full = text.substring(i, j);
+        const inner = text.substring(i + matchedPrefix.prefix.length, j - 1).trim();
+        results.push({ start: i, end: j, full, inner });
+        i = j;
+        continue;
+      }
+    }
+
+    // Match bare √ with digits or identifiers (e.g. √25, √16, √x)
+    if (text[i] === '√') {
+      const sub = text.substring(i + 1);
+      const numMatch = sub.match(/^[0-9a-zA-Z]+/);
+      if (numMatch) {
+        const inner = numMatch[0];
+        const j = i + 1 + inner.length;
+        results.push({ start: i, end: j, full: text.substring(i, j), inner });
+        i = j;
+        continue;
+      }
+    }
+
+    i++;
+  }
+  return results;
+}
+
 export function useRichTokenizer() {
   /**
-   * Tokenize a single line of text into words, spaces, strikethrough, and color tokens.
+   * Tokenize a single line of text into words, spaces, strikethrough, color, and math root tokens.
    */
   function tokenizeLine(line: string, defaultColor: string): RenderToken[] {
     const tokens: RenderToken[] = [];
@@ -22,8 +85,37 @@ export function useRichTokenizer() {
     let match: RegExpExecArray | null;
 
     function pushPlainSegment(text: string, activeColor: string, isStrike = false, isHigh = false, highColor = '') {
+      const roots = findMathRootsInText(text);
+      if (roots.length === 0) {
+        pushTextWithSpaces(text, activeColor, isStrike, isHigh, highColor);
+        return;
+      }
+
+      let curIdx = 0;
+      for (const root of roots) {
+        if (root.start > curIdx) {
+          pushTextWithSpaces(text.substring(curIdx, root.start), activeColor, isStrike, isHigh, highColor);
+        }
+        tokens.push({
+          type: 'root',
+          text: root.full,
+          color: activeColor,
+          isRoot: true,
+          rootContent: root.inner,
+          isStrikethrough: isStrike,
+          isHighlight: isHigh,
+          highlightColor: highColor,
+        });
+        curIdx = root.end;
+      }
+      if (curIdx < text.length) {
+        pushTextWithSpaces(text.substring(curIdx), activeColor, isStrike, isHigh, highColor);
+      }
+    }
+
+    function pushTextWithSpaces(plainText: string, activeColor: string, isStrike = false, isHigh = false, highColor = '') {
       // Split by whitespace while preserving spaces
-      const parts = text.split(/(\s+)/);
+      const parts = plainText.split(/(\s+)/);
       for (const part of parts) {
         if (!part) continue;
         if (/^\s+$/.test(part)) {

@@ -142,8 +142,16 @@ export function wrapColumnTokens(
       continue;
     }
 
-    const rawWordWidth = measureCtx.measureText(token.text).width;
-    const wordWidth = rawWordWidth * (typography.letterSpacing || 1);
+    let wordWidth: number;
+    if (token.isRoot && token.rootContent) {
+      const rawInnerWidth = measureCtx.measureText(token.rootContent).width;
+      const innerWidth = rawInnerWidth * (typography.letterSpacing || 1);
+      const radicalLeftWidth = typography.fontSize * 0.42;
+      wordWidth = radicalLeftWidth + innerWidth + 10;
+    } else {
+      const rawWordWidth = measureCtx.measureText(token.text).width;
+      wordWidth = rawWordWidth * (typography.letterSpacing || 1);
+    }
 
     // If word exceeds column width and current line already has words, wrap to next subline
     if (currentLineWidth + wordWidth > maxColumnWidth && lines[lines.length - 1].length > 0) {
